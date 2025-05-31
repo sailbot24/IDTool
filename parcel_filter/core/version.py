@@ -60,7 +60,7 @@ def check_for_updates():
     print(f"Current version: {VERSION}")
     try:
         # Get the latest release version from GitHub
-        response = requests.get(f"{GITHUB_REPO}/releases/latest")
+        response = requests.get("https://api.github.com/repos/sailbot24/IDTool/releases/latest")
         if response.status_code == 200:
             latest_version = response.json()["tag_name"].strip("v")
             print(f"Latest version on GitHub: {latest_version}")
