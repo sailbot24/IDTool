@@ -1,0 +1,650 @@
+2025-05-30 13:59:11,504 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 13:59:11,667 - parcel_filter.core.filter - INFO - Loading checkpoint: drive_times
+2025-05-30 13:59:11,727 - __main__ - INFO - Loaded drive time checkpoint, skipping to ranking
+2025-05-30 13:59:12,739 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 13:59:12,739 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 13:59:12,740 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_135912
+2025-05-30 13:59:12,765 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_135912/weights_20250530_135912.json
+2025-05-30 13:59:14,193 - pyogrio._io - INFO - Created 4,178 records
+2025-05-30 13:59:14,205 - parcel_filter.core.ranking - INFO - Saved ranked parcels to results/run_20250530_135912/20250530_135912_ranked_parcels.gpkg
+2025-05-30 13:59:42,806 - parcel_filter.core.ranking - INFO - Ranking statistics:
+2025-05-30 13:59:42,807 - parcel_filter.core.ranking - INFO -   Min score: 0.00
+2025-05-30 13:59:42,807 - parcel_filter.core.ranking - INFO -   Max score: 10.00
+2025-05-30 13:59:42,807 - parcel_filter.core.ranking - INFO -   Mean score: 5.00
+2025-05-30 13:59:42,814 - parcel_filter.core.ranking - INFO - Top 5 parcels by ranking:
+2025-05-30 13:59:42,815 - parcel_filter.core.ranking - INFO -   Parcel 40067020: Score 10.00
+2025-05-30 13:59:42,815 - parcel_filter.core.ranking - INFO -   Parcel 40067019: Score 9.96
+2025-05-30 13:59:42,815 - parcel_filter.core.ranking - INFO -   Parcel 40056004A: Score 9.66
+2025-05-30 13:59:42,815 - parcel_filter.core.ranking - INFO -   Parcel 40066047A: Score 9.61
+2025-05-30 13:59:42,815 - parcel_filter.core.ranking - INFO -   Parcel 50631005: Score 9.57
+2025-05-30 13:59:42,815 - __main__ - INFO - Results saved in run_20250530_135912 directory
+2025-05-30 13:59:42,815 - __main__ - INFO - Generating interactive map...
+2025-05-30 13:59:42,815 - parcel_filter.core.map_viewer - INFO - Creating interactive map
+2025-05-30 13:59:42,881 - parcel_filter.core.map_viewer - INFO - Number of parcels: 4178
+2025-05-30 13:59:42,881 - parcel_filter.core.map_viewer - INFO - Sample normalized rank values: 0    5.357312
+1    6.106088
+2    5.680646
+3    5.257400
+4    5.299546
+Name: parcel_rank_normalized, dtype: float64
+2025-05-30 13:59:46,328 - parcel_filter.core.map_viewer - INFO - Interactive map saved to results/run_20250530_135912/az_maricopa_parcels_map.html
+2025-05-30 13:59:46,335 - __main__ - INFO - Interactive map saved to results/run_20250530_135912/az_maricopa_parcels_map.html
+2025-05-30 14:01:18,050 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:01:18,277 - parcel_filter.core.filter - INFO - Loading checkpoint: drive_times
+2025-05-30 14:01:18,343 - __main__ - INFO - Loaded drive time checkpoint, skipping to ranking
+2025-05-30 14:01:19,187 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 14:01:19,188 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 14:01:19,188 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_140119
+2025-05-30 14:01:19,228 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_140119/weights_20250530_140119.json
+2025-05-30 14:01:19,640 - pyogrio._io - INFO - Created 4,178 records
+2025-05-30 14:01:19,653 - parcel_filter.core.ranking - INFO - Saved ranked parcels to results/run_20250530_140119/20250530_140119_ranked_parcels.gpkg
+2025-05-30 14:01:30,425 - parcel_filter.core.ranking - INFO - Ranking statistics:
+2025-05-30 14:01:30,425 - parcel_filter.core.ranking - INFO -   Min score: 0.00
+2025-05-30 14:01:30,425 - parcel_filter.core.ranking - INFO -   Max score: 10.00
+2025-05-30 14:01:30,425 - parcel_filter.core.ranking - INFO -   Mean score: 5.00
+2025-05-30 14:01:30,435 - parcel_filter.core.ranking - INFO - Top 5 parcels by ranking:
+2025-05-30 14:01:30,436 - parcel_filter.core.ranking - INFO -   Parcel 40067020: Score 10.00
+2025-05-30 14:01:30,437 - parcel_filter.core.ranking - INFO -   Parcel 40067019: Score 9.96
+2025-05-30 14:01:30,437 - parcel_filter.core.ranking - INFO -   Parcel 40056004A: Score 9.66
+2025-05-30 14:01:30,437 - parcel_filter.core.ranking - INFO -   Parcel 40066047A: Score 9.61
+2025-05-30 14:01:30,437 - parcel_filter.core.ranking - INFO -   Parcel 50631005: Score 9.57
+2025-05-30 14:01:30,437 - __main__ - INFO - Results saved in run_20250530_140119 directory
+2025-05-30 14:01:30,437 - __main__ - INFO - Generating interactive map...
+2025-05-30 14:01:30,437 - parcel_filter.core.map_viewer - INFO - Creating interactive map
+2025-05-30 14:01:30,512 - parcel_filter.core.map_viewer - INFO - Number of parcels: 4178
+2025-05-30 14:01:30,513 - parcel_filter.core.map_viewer - INFO - Sample normalized rank values: 0    5.357312
+1    6.106088
+2    5.680646
+3    5.257400
+4    5.299546
+Name: parcel_rank_normalized, dtype: float64
+2025-05-30 14:01:34,028 - parcel_filter.core.map_viewer - INFO - Interactive map saved to results/run_20250530_140119/az_maricopa_parcels_map.html
+2025-05-30 14:01:34,035 - __main__ - INFO - Interactive map saved to results/run_20250530_140119/az_maricopa_parcels_map.html
+2025-05-30 14:11:31,691 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:11:31,717 - __main__ - ERROR - Error processing parcels: IO Error: Could not set lock on file "/Users/gavin/Desktop/Personal/Adams Geospatial/Data/Garrison/IDTool/data/LandAI.ddb": Conflicting lock is held in /Applications/DBeaver.app/Contents/MacOS/dbeaver (PID 594) by user gavin. See also https://duckdb.org/docs/stable/connect/concurrency
+2025-05-30 14:11:40,223 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:11:40,426 - parcel_filter.core.filter - INFO - Loading checkpoint: drive_times
+2025-05-30 14:11:40,493 - __main__ - INFO - Loaded drive time checkpoint, skipping to ranking
+2025-05-30 14:11:41,914 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 14:11:41,914 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 14:11:41,915 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_141141
+2025-05-30 14:11:41,945 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_141141/weights_20250530_141141.json
+2025-05-30 14:11:42,342 - pyogrio._io - INFO - Created 4,178 records
+2025-05-30 14:11:42,355 - parcel_filter.core.ranking - INFO - Saved ranked parcels to results/run_20250530_141141/20250530_141141_ranked_parcels.gpkg
+2025-05-30 14:11:50,625 - parcel_filter.core.ranking - INFO - Ranking statistics:
+2025-05-30 14:11:50,625 - parcel_filter.core.ranking - INFO -   Min score: 0.00
+2025-05-30 14:11:50,626 - parcel_filter.core.ranking - INFO -   Max score: 10.00
+2025-05-30 14:11:50,626 - parcel_filter.core.ranking - INFO -   Mean score: 5.00
+2025-05-30 14:11:50,638 - parcel_filter.core.ranking - INFO - Top 5 parcels by ranking:
+2025-05-30 14:11:50,640 - parcel_filter.core.ranking - INFO -   Parcel 40067020: Score 10.00
+2025-05-30 14:11:50,640 - parcel_filter.core.ranking - INFO -   Parcel 40067019: Score 9.96
+2025-05-30 14:11:50,640 - parcel_filter.core.ranking - INFO -   Parcel 40056004A: Score 9.66
+2025-05-30 14:11:50,640 - parcel_filter.core.ranking - INFO -   Parcel 40066047A: Score 9.61
+2025-05-30 14:11:50,640 - parcel_filter.core.ranking - INFO -   Parcel 50631005: Score 9.57
+2025-05-30 14:11:50,640 - __main__ - INFO - Results saved in run_20250530_141141 directory
+2025-05-30 14:11:50,640 - __main__ - INFO - Generating interactive map...
+2025-05-30 14:11:50,640 - parcel_filter.core.map_viewer - INFO - Creating interactive map
+2025-05-30 14:11:50,720 - parcel_filter.core.map_viewer - INFO - Number of parcels: 4178
+2025-05-30 14:11:50,721 - parcel_filter.core.map_viewer - INFO - Sample normalized rank values: 0    5.357312
+1    6.106088
+2    5.680646
+3    5.257400
+4    5.299546
+Name: parcel_rank_normalized, dtype: float64
+2025-05-30 14:11:54,195 - parcel_filter.core.map_viewer - INFO - Interactive map saved to results/run_20250530_141141/az_maricopa_parcels_map.html
+2025-05-30 14:11:54,202 - __main__ - INFO - Interactive map saved to results/run_20250530_141141/az_maricopa_parcels_map.html
+2025-05-30 14:12:02,258 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:12:02,366 - __main__ - INFO - Force flag set, running full pipeline
+2025-05-30 14:12:02,366 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:12:02,368 - parcel_filter.core.filter - ERROR - Error loading parcels: Binder Error: Column "geometry" in EXCLUDE list not found in FROM clause
+2025-05-30 14:12:02,371 - __main__ - ERROR - Error processing parcels: Binder Error: Column "geometry" in EXCLUDE list not found in FROM clause
+2025-05-30 14:24:42,152 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:24:42,359 - __main__ - INFO - Force flag set, running full pipeline
+2025-05-30 14:24:42,359 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:24:43,014 - parcel_filter.core.filter - ERROR - Error loading parcels: Binder Error: No function matches the given name and argument types 'ST_AsText(WKB_BLOB)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_AsText(GEOMETRY) -> VARCHAR
+	ST_AsText(POINT_2D) -> VARCHAR
+	ST_AsText(LINESTRING_2D) -> VARCHAR
+	ST_AsText(POLYGON_2D) -> VARCHAR
+	ST_AsText(BOX_2D) -> VARCHAR
+
+
+LINE 2:             SELECT *, ST_AsText(geom) as geom_wkt FROM (SELECT * FROM parcels_fil...
+                              ^
+2025-05-30 14:24:43,084 - __main__ - ERROR - Error processing parcels: Binder Error: No function matches the given name and argument types 'ST_AsText(WKB_BLOB)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_AsText(GEOMETRY) -> VARCHAR
+	ST_AsText(POINT_2D) -> VARCHAR
+	ST_AsText(LINESTRING_2D) -> VARCHAR
+	ST_AsText(POLYGON_2D) -> VARCHAR
+	ST_AsText(BOX_2D) -> VARCHAR
+
+
+LINE 2:             SELECT *, ST_AsText(geom) as geom_wkt FROM (SELECT * FROM parcels_fil...
+                              ^
+2025-05-30 14:26:12,538 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:26:12,650 - __main__ - INFO - Force flag set, running full pipeline
+2025-05-30 14:26:12,650 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:26:13,287 - parcel_filter.core.filter - ERROR - Error loading parcels: Binder Error: No function matches the given name and argument types 'ST_AsText(WKB_BLOB)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_AsText(GEOMETRY) -> VARCHAR
+	ST_AsText(POINT_2D) -> VARCHAR
+	ST_AsText(LINESTRING_2D) -> VARCHAR
+	ST_AsText(POLYGON_2D) -> VARCHAR
+	ST_AsText(BOX_2D) -> VARCHAR
+
+
+LINE 2:             SELECT *, ST_AsText(geom) as geom_wkt 
+                              ^
+2025-05-30 14:26:13,356 - __main__ - ERROR - Error processing parcels: Binder Error: No function matches the given name and argument types 'ST_AsText(WKB_BLOB)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_AsText(GEOMETRY) -> VARCHAR
+	ST_AsText(POINT_2D) -> VARCHAR
+	ST_AsText(LINESTRING_2D) -> VARCHAR
+	ST_AsText(POLYGON_2D) -> VARCHAR
+	ST_AsText(BOX_2D) -> VARCHAR
+
+
+LINE 2:             SELECT *, ST_AsText(geom) as geom_wkt 
+                              ^
+2025-05-30 14:26:53,605 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:26:53,719 - __main__ - INFO - Force flag set, running full pipeline
+2025-05-30 14:26:53,719 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:26:54,315 - parcel_filter.core.filter - ERROR - Error loading parcels: Binder Error: No function matches the given name and argument types 'ST_AsText(WKB_BLOB)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_AsText(GEOMETRY) -> VARCHAR
+	ST_AsText(POINT_2D) -> VARCHAR
+	ST_AsText(LINESTRING_2D) -> VARCHAR
+	ST_AsText(POLYGON_2D) -> VARCHAR
+	ST_AsText(BOX_2D) -> VARCHAR
+
+
+LINE 2:             SELECT *, ST_AsText(geom) as geom_wkt 
+                              ^
+2025-05-30 14:26:54,376 - __main__ - ERROR - Error processing parcels: Binder Error: No function matches the given name and argument types 'ST_AsText(WKB_BLOB)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_AsText(GEOMETRY) -> VARCHAR
+	ST_AsText(POINT_2D) -> VARCHAR
+	ST_AsText(LINESTRING_2D) -> VARCHAR
+	ST_AsText(POLYGON_2D) -> VARCHAR
+	ST_AsText(BOX_2D) -> VARCHAR
+
+
+LINE 2:             SELECT *, ST_AsText(geom) as geom_wkt 
+                              ^
+2025-05-30 14:29:01,166 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:29:01,189 - __main__ - ERROR - Error processing parcels: IO Error: Could not set lock on file "/Users/gavin/Desktop/Personal/Adams Geospatial/Data/Garrison/IDTool/data/LandAI.ddb": Conflicting lock is held in /Applications/DBeaver.app/Contents/MacOS/dbeaver (PID 594) by user gavin. See also https://duckdb.org/docs/stable/connect/concurrency
+2025-05-30 14:29:11,512 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:29:11,677 - __main__ - INFO - Force flag set, running full pipeline
+2025-05-30 14:29:11,677 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:29:12,314 - parcel_filter.core.filter - ERROR - Error loading parcels: Expected bytes or string, got bytearray
+2025-05-30 14:29:12,377 - __main__ - ERROR - Error processing parcels: Expected bytes or string, got bytearray
+2025-05-30 14:29:40,556 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:29:40,647 - __main__ - INFO - Force flag set, running full pipeline
+2025-05-30 14:29:40,647 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:29:41,177 - parcel_filter.core.filter - INFO - Loaded 4222 parcels after initial filtering
+2025-05-30 14:29:41,177 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
+2025-05-30 14:29:41,179 - parcel_filter.core.filter - ERROR - Error filtering airports: Binder Error: No function matches the given name and argument types 'ST_Intersects(WKB_BLOB, GEOMETRY)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_Intersects(BOX_2D, BOX_2D) -> BOOLEAN
+	ST_Intersects(GEOMETRY, GEOMETRY) -> BOOLEAN
+
+
+LINE 8:                     ON ST_Intersects(p.geom, a.geom)
+                               ^
+2025-05-30 14:29:41,221 - __main__ - ERROR - Error processing parcels: Binder Error: No function matches the given name and argument types 'ST_Intersects(WKB_BLOB, GEOMETRY)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_Intersects(BOX_2D, BOX_2D) -> BOOLEAN
+	ST_Intersects(GEOMETRY, GEOMETRY) -> BOOLEAN
+
+
+LINE 8:                     ON ST_Intersects(p.geom, a.geom)
+                               ^
+2025-05-30 14:30:18,650 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:30:18,741 - __main__ - INFO - Force flag set, running full pipeline
+2025-05-30 14:30:18,741 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:30:19,254 - parcel_filter.core.filter - INFO - Loaded 4222 parcels after initial filtering
+2025-05-30 14:30:19,254 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
+2025-05-30 14:30:19,388 - parcel_filter.core.filter - INFO - After airport filtering: 4178 parcels
+2025-05-30 14:30:19,388 - parcel_filter.core.filter - INFO - Filtering parcels by distance to transmission lines...
+2025-05-30 14:30:19,417 - parcel_filter.core.filter - INFO - Saving checkpoint: transmission_filtered_100m
+2025-05-30 14:30:19,501 - parcel_filter.core.filter - INFO - After transmission line filtering: 2496 parcels
+2025-05-30 14:30:19,502 - parcel_filter.core.filter - INFO - Loading isochrone data from database
+2025-05-30 14:30:19,521 - parcel_filter.core.filter - INFO - Loaded 6 isochrone polygons
+2025-05-30 14:30:19,521 - parcel_filter.core.filter - INFO - Calculating drive times...
+2025-05-30 14:30:19,534 - parcel_filter.core.filter - ERROR - Error calculating drive times: Binder Error: No function matches the given name and argument types 'ST_Force2D(WKB_BLOB)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_Force2D(GEOMETRY) -> GEOMETRY
+
+
+LINE 12:                     ST_Force2D(p.geom) as geom,
+                             ^
+2025-05-30 14:30:19,967 - __main__ - ERROR - Error processing parcels: Binder Error: No function matches the given name and argument types 'ST_Force2D(WKB_BLOB)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_Force2D(GEOMETRY) -> GEOMETRY
+
+
+LINE 12:                     ST_Force2D(p.geom) as geom,
+                             ^
+2025-05-30 14:30:56,636 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:30:56,726 - __main__ - INFO - Force flag set, running full pipeline
+2025-05-30 14:30:56,726 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:30:57,237 - parcel_filter.core.filter - INFO - Loaded 4222 parcels after initial filtering
+2025-05-30 14:30:57,237 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
+2025-05-30 14:30:57,360 - parcel_filter.core.filter - INFO - After airport filtering: 4178 parcels
+2025-05-30 14:30:57,361 - parcel_filter.core.filter - INFO - Filtering parcels by distance to transmission lines...
+2025-05-30 14:30:57,389 - parcel_filter.core.filter - INFO - Saving checkpoint: transmission_filtered_100m
+2025-05-30 14:30:57,473 - parcel_filter.core.filter - INFO - After transmission line filtering: 2496 parcels
+2025-05-30 14:30:57,473 - parcel_filter.core.filter - INFO - Loading isochrone data from database
+2025-05-30 14:30:57,490 - parcel_filter.core.filter - INFO - Loaded 6 isochrone polygons
+2025-05-30 14:30:57,490 - parcel_filter.core.filter - INFO - Calculating drive times...
+2025-05-30 14:30:57,564 - parcel_filter.core.filter - INFO - Saving checkpoint: drive_times
+2025-05-30 14:30:57,630 - parcel_filter.core.filter - ERROR - Error calculating drive times: ParseException: Input buffer is smaller than requested object size
+2025-05-30 14:30:58,156 - __main__ - ERROR - Error processing parcels: ParseException: Input buffer is smaller than requested object size
+2025-05-30 14:31:33,852 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:31:33,942 - __main__ - INFO - Force flag set, running full pipeline
+2025-05-30 14:31:33,942 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:31:34,468 - parcel_filter.core.filter - INFO - Loaded 4222 parcels after initial filtering
+2025-05-30 14:31:34,468 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
+2025-05-30 14:31:34,592 - parcel_filter.core.filter - INFO - After airport filtering: 4178 parcels
+2025-05-30 14:31:34,593 - parcel_filter.core.filter - INFO - Filtering parcels by distance to transmission lines...
+2025-05-30 14:31:34,620 - parcel_filter.core.filter - INFO - Saving checkpoint: transmission_filtered_100m
+2025-05-30 14:31:34,706 - parcel_filter.core.filter - INFO - After transmission line filtering: 2496 parcels
+2025-05-30 14:31:34,706 - parcel_filter.core.filter - INFO - Loading isochrone data from database
+2025-05-30 14:31:34,723 - parcel_filter.core.filter - INFO - Loaded 6 isochrone polygons
+2025-05-30 14:31:34,723 - parcel_filter.core.filter - INFO - Calculating drive times...
+2025-05-30 14:31:34,760 - parcel_filter.core.filter - INFO - Saving checkpoint: drive_times
+2025-05-30 14:31:35,977 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 14:31:35,977 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 14:31:35,978 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_143135
+2025-05-30 14:31:36,013 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_143135/weights_20250530_143135.json
+2025-05-30 14:31:36,551 - __main__ - ERROR - Error processing parcels: No geometry column found in parcels DataFrame
+2025-05-30 14:32:09,497 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:32:09,587 - __main__ - INFO - Force flag set, running full pipeline
+2025-05-30 14:32:09,588 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:32:10,118 - parcel_filter.core.filter - INFO - Loaded 4222 parcels after initial filtering
+2025-05-30 14:32:10,118 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
+2025-05-30 14:32:10,254 - parcel_filter.core.filter - INFO - After airport filtering: 4178 parcels
+2025-05-30 14:32:10,254 - parcel_filter.core.filter - INFO - Filtering parcels by distance to transmission lines...
+2025-05-30 14:32:10,282 - parcel_filter.core.filter - INFO - Saving checkpoint: transmission_filtered_100m
+2025-05-30 14:32:10,371 - parcel_filter.core.filter - INFO - After transmission line filtering: 2496 parcels
+2025-05-30 14:32:10,371 - parcel_filter.core.filter - INFO - Loading isochrone data from database
+2025-05-30 14:32:10,388 - parcel_filter.core.filter - INFO - Loaded 6 isochrone polygons
+2025-05-30 14:32:10,388 - parcel_filter.core.filter - INFO - Calculating drive times...
+2025-05-30 14:32:10,424 - parcel_filter.core.filter - INFO - Saving checkpoint: drive_times
+2025-05-30 14:32:11,078 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 14:32:11,078 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 14:32:11,078 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_143211
+2025-05-30 14:32:11,100 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_143211/weights_20250530_143211.json
+2025-05-30 14:32:11,617 - __main__ - ERROR - Error processing parcels: No geometry column found in parcels DataFrame
+2025-05-30 14:32:46,065 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:32:46,159 - __main__ - INFO - Force flag set, running full pipeline
+2025-05-30 14:32:46,159 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:32:46,711 - parcel_filter.core.filter - INFO - Loaded 4222 parcels after initial filtering
+2025-05-30 14:32:46,711 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
+2025-05-30 14:32:46,843 - parcel_filter.core.filter - INFO - After airport filtering: 4178 parcels
+2025-05-30 14:32:46,843 - parcel_filter.core.filter - INFO - Filtering parcels by distance to transmission lines...
+2025-05-30 14:32:46,872 - parcel_filter.core.filter - INFO - Saving checkpoint: transmission_filtered_100m
+2025-05-30 14:32:47,002 - parcel_filter.core.filter - INFO - After transmission line filtering: 2496 parcels
+2025-05-30 14:32:47,003 - parcel_filter.core.filter - INFO - Loading isochrone data from database
+2025-05-30 14:32:47,019 - parcel_filter.core.filter - INFO - Loaded 6 isochrone polygons
+2025-05-30 14:32:47,019 - parcel_filter.core.filter - INFO - Calculating drive times...
+2025-05-30 14:32:47,056 - parcel_filter.core.filter - INFO - Saving checkpoint: drive_times
+2025-05-30 14:32:47,710 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 14:32:47,710 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 14:32:47,711 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_143247
+2025-05-30 14:32:47,741 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_143247/weights_20250530_143247.json
+2025-05-30 14:32:48,399 - __main__ - ERROR - Error processing parcels: Error adding field 'geom' to layer
+2025-05-30 14:33:11,295 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:33:11,385 - __main__ - INFO - Force flag set, running full pipeline
+2025-05-30 14:33:11,385 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:33:11,906 - parcel_filter.core.filter - INFO - Loaded 4222 parcels after initial filtering
+2025-05-30 14:33:11,906 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
+2025-05-30 14:33:12,033 - parcel_filter.core.filter - INFO - After airport filtering: 4178 parcels
+2025-05-30 14:33:12,033 - parcel_filter.core.filter - INFO - Filtering parcels by distance to transmission lines...
+2025-05-30 14:33:12,061 - parcel_filter.core.filter - INFO - Saving checkpoint: transmission_filtered_100m
+2025-05-30 14:33:12,149 - parcel_filter.core.filter - INFO - After transmission line filtering: 2496 parcels
+2025-05-30 14:33:12,149 - parcel_filter.core.filter - INFO - Loading isochrone data from database
+2025-05-30 14:33:12,166 - parcel_filter.core.filter - INFO - Loaded 6 isochrone polygons
+2025-05-30 14:33:12,166 - parcel_filter.core.filter - INFO - Calculating drive times...
+2025-05-30 14:33:12,203 - parcel_filter.core.filter - INFO - Saving checkpoint: drive_times
+2025-05-30 14:33:13,025 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 14:33:13,025 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 14:33:13,026 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_143313
+2025-05-30 14:33:13,057 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_143313/weights_20250530_143313.json
+2025-05-30 14:33:13,313 - pyogrio._io - INFO - Created 2,496 records
+2025-05-30 14:33:13,321 - parcel_filter.core.ranking - INFO - Saved ranked parcels to results/run_20250530_143313/20250530_143313_ranked_parcels.gpkg
+2025-05-30 14:33:46,855 - parcel_filter.core.ranking - INFO - Ranking statistics:
+2025-05-30 14:33:46,855 - parcel_filter.core.ranking - INFO -   Min score: 0.00
+2025-05-30 14:33:46,856 - parcel_filter.core.ranking - INFO -   Max score: 10.00
+2025-05-30 14:33:46,856 - parcel_filter.core.ranking - INFO -   Mean score: 5.08
+2025-05-30 14:33:46,868 - parcel_filter.core.ranking - INFO - Top 5 parcels by ranking:
+2025-05-30 14:33:46,870 - parcel_filter.core.ranking - INFO -   Parcel 40205015C: Score 10.00
+2025-05-30 14:33:46,870 - parcel_filter.core.ranking - INFO -   Parcel 40315050B: Score 9.73
+2025-05-30 14:33:46,870 - parcel_filter.core.ranking - INFO -   Parcel 40221011Z: Score 9.59
+2025-05-30 14:33:46,870 - parcel_filter.core.ranking - INFO -   Parcel 40316012L: Score 9.35
+2025-05-30 14:33:46,870 - parcel_filter.core.ranking - INFO -   Parcel 40345034S: Score 9.23
+2025-05-30 14:33:46,870 - __main__ - INFO - Results saved in run_20250530_143313 directory
+2025-05-30 14:33:46,870 - __main__ - INFO - Generating interactive map...
+2025-05-30 14:33:46,871 - parcel_filter.core.map_viewer - INFO - Creating interactive map
+2025-05-30 14:33:46,938 - parcel_filter.core.map_viewer - INFO - Number of parcels: 2496
+2025-05-30 14:33:46,938 - parcel_filter.core.map_viewer - INFO - Sample normalized rank values: 0    4.361759
+1    4.873368
+2    5.140735
+3    5.269391
+4    4.689553
+Name: parcel_rank_normalized, dtype: float64
+2025-05-30 14:33:49,381 - parcel_filter.core.map_viewer - INFO - Interactive map saved to results/run_20250530_143313/az_maricopa_parcels_map.html
+2025-05-30 14:33:49,385 - __main__ - INFO - Interactive map saved to results/run_20250530_143313/az_maricopa_parcels_map.html
+2025-05-30 14:35:44,458 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:35:44,657 - __main__ - INFO - Force flag set, running full pipeline
+2025-05-30 14:35:44,657 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:35:45,339 - parcel_filter.core.filter - INFO - Loaded 4222 parcels after initial filtering
+2025-05-30 14:35:45,339 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
+2025-05-30 14:35:45,478 - parcel_filter.core.filter - INFO - After airport filtering: 4178 parcels
+2025-05-30 14:35:45,478 - parcel_filter.core.filter - INFO - Filtering parcels by distance to transmission lines...
+2025-05-30 14:35:45,513 - parcel_filter.core.filter - INFO - Saving checkpoint: transmission_filtered_100m
+2025-05-30 14:35:45,605 - parcel_filter.core.filter - INFO - After transmission line filtering: 2496 parcels
+2025-05-30 14:35:45,605 - parcel_filter.core.filter - INFO - Loading isochrone data from database
+2025-05-30 14:35:45,624 - parcel_filter.core.filter - INFO - Loaded 6 isochrone polygons
+2025-05-30 14:35:45,624 - parcel_filter.core.filter - INFO - Calculating drive times...
+2025-05-30 14:35:45,666 - parcel_filter.core.filter - INFO - Saving checkpoint: drive_times
+2025-05-30 14:35:46,318 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 14:35:46,319 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 14:35:46,319 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_143546
+2025-05-30 14:35:46,352 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_143546/weights_20250530_143546.json
+2025-05-30 14:35:46,669 - pyogrio._io - INFO - Created 2,496 records
+2025-05-30 14:35:46,680 - parcel_filter.core.ranking - INFO - Saved ranked parcels to results/run_20250530_143546/20250530_143546_ranked_parcels.gpkg
+2025-05-30 14:35:49,562 - parcel_filter.core.ranking - INFO - Ranking statistics:
+2025-05-30 14:35:49,563 - parcel_filter.core.ranking - INFO -   Min score: 0.00
+2025-05-30 14:35:49,563 - parcel_filter.core.ranking - INFO -   Max score: 10.00
+2025-05-30 14:35:49,563 - parcel_filter.core.ranking - INFO -   Mean score: 5.08
+2025-05-30 14:35:49,572 - parcel_filter.core.ranking - INFO - Top 5 parcels by ranking:
+2025-05-30 14:35:49,574 - parcel_filter.core.ranking - INFO -   Parcel 40205015C: Score 10.00
+2025-05-30 14:35:49,574 - parcel_filter.core.ranking - INFO -   Parcel 40315050B: Score 9.73
+2025-05-30 14:35:49,574 - parcel_filter.core.ranking - INFO -   Parcel 40221011Z: Score 9.59
+2025-05-30 14:35:49,575 - parcel_filter.core.ranking - INFO -   Parcel 40316012L: Score 9.35
+2025-05-30 14:35:49,575 - parcel_filter.core.ranking - INFO -   Parcel 40345034S: Score 9.23
+2025-05-30 14:35:49,575 - __main__ - INFO - Results saved in run_20250530_143546 directory
+2025-05-30 14:35:49,575 - __main__ - INFO - Generating interactive map...
+2025-05-30 14:35:49,575 - parcel_filter.core.map_viewer - INFO - Creating interactive map
+2025-05-30 14:35:49,632 - parcel_filter.core.map_viewer - INFO - Number of parcels: 2496
+2025-05-30 14:35:49,632 - parcel_filter.core.map_viewer - INFO - Sample normalized rank values: 0    4.361759
+1    4.873368
+2    5.140735
+3    5.269391
+4    4.689553
+Name: parcel_rank_normalized, dtype: float64
+2025-05-30 14:35:49,962 - parcel_filter.core.map_viewer - ERROR - Error adding rextag layers: IO Error: Cannot open file "/Users/gavin/Desktop/Personal/Adams Geospatial/Data/Garrison/IDTool/duckdb_database/parcels.duckdb": No such file or directory
+2025-05-30 14:35:51,960 - parcel_filter.core.map_viewer - INFO - Interactive map saved to results/run_20250530_143546/az_maricopa_parcels_map.html
+2025-05-30 14:35:51,965 - __main__ - INFO - Interactive map saved to results/run_20250530_143546/az_maricopa_parcels_map.html
+2025-05-30 14:43:45,275 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:43:45,322 - __main__ - ERROR - Error processing parcels: IO Error: Could not set lock on file "/Users/gavin/Desktop/Personal/Adams Geospatial/Data/Garrison/IDTool/data/LandAI.ddb": Conflicting lock is held in /Applications/DBeaver.app/Contents/MacOS/dbeaver (PID 594) by user gavin. See also https://duckdb.org/docs/stable/connect/concurrency
+2025-05-30 14:46:49,921 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:46:50,152 - __main__ - INFO - No checkpoints found, running full pipeline
+2025-05-30 14:46:50,152 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:46:50,163 - parcel_filter.core.filter - ERROR - Error converting geometry column in parcels_filtered_initial: 'NoneType' object is not subscriptable
+2025-05-30 14:46:50,164 - parcel_filter.core.filter - ERROR - Error loading parcels: 'NoneType' object is not subscriptable
+2025-05-30 14:46:50,170 - __main__ - ERROR - Error processing parcels: 'NoneType' object is not subscriptable
+2025-05-30 14:58:39,955 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:58:40,209 - __main__ - INFO - No checkpoints found, running full pipeline
+2025-05-30 14:58:40,209 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:58:40,226 - parcel_filter.core.filter - ERROR - Error converting geometry column in parcels_filtered_initial: 'NoneType' object is not subscriptable
+2025-05-30 14:58:40,227 - parcel_filter.core.filter - ERROR - Error loading parcels: 'NoneType' object is not subscriptable
+2025-05-30 14:58:40,232 - __main__ - ERROR - Error processing parcels: 'NoneType' object is not subscriptable
+2025-05-30 14:59:27,994 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 14:59:28,165 - __main__ - INFO - No checkpoints found, running full pipeline
+2025-05-30 14:59:28,165 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 14:59:28,178 - parcel_filter.core.filter - ERROR - Error converting geometry column in parcels_filtered_initial: 'NoneType' object is not subscriptable
+2025-05-30 14:59:28,178 - parcel_filter.core.filter - ERROR - Error loading parcels: 'NoneType' object is not subscriptable
+2025-05-30 14:59:28,183 - __main__ - ERROR - Error processing parcels: 'NoneType' object is not subscriptable
+2025-05-30 15:01:29,898 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 15:01:30,084 - __main__ - INFO - No checkpoints found, running full pipeline
+2025-05-30 15:01:30,084 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 15:01:30,093 - parcel_filter.core.filter - ERROR - Error converting geometry column in parcels_filtered_initial: No rows found in table parcels_filtered_initial
+2025-05-30 15:01:30,094 - parcel_filter.core.filter - ERROR - Error loading parcels: No rows found in table parcels_filtered_initial
+2025-05-30 15:01:30,099 - __main__ - ERROR - Error processing parcels: No rows found in table parcels_filtered_initial
+2025-05-30 15:07:08,858 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 15:07:09,124 - __main__ - INFO - No checkpoints found, running full pipeline
+2025-05-30 15:07:09,124 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 15:07:09,544 - parcel_filter.core.filter - INFO - Converting geometry column in parcels_filtered_initial from WKB_BLOB to GEOMETRY type
+2025-05-30 15:07:09,627 - parcel_filter.core.filter - ERROR - Error loading parcels: ParseException: Input buffer is smaller than requested object size
+2025-05-30 15:07:09,640 - __main__ - ERROR - Error processing parcels: ParseException: Input buffer is smaller than requested object size
+2025-05-30 15:07:56,214 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 15:07:56,366 - __main__ - INFO - No checkpoints found, running full pipeline
+2025-05-30 15:07:56,366 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 15:07:56,687 - parcel_filter.core.filter - INFO - Converting geometry column in parcels_filtered_initial from WKB_BLOB to GEOMETRY type
+2025-05-30 15:07:56,748 - parcel_filter.core.filter - ERROR - Error loading parcels: ParseException: Input buffer is smaller than requested object size
+2025-05-30 15:07:56,762 - __main__ - ERROR - Error processing parcels: ParseException: Input buffer is smaller than requested object size
+2025-05-30 15:15:37,741 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 15:15:38,000 - __main__ - INFO - No checkpoints found, running full pipeline
+2025-05-30 15:15:38,001 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 15:15:38,413 - parcel_filter.core.filter - INFO - Converting geometry column in parcels_filtered_initial from WKB_BLOB to GEOMETRY type
+2025-05-30 15:15:38,506 - parcel_filter.core.filter - ERROR - Error loading parcels: ParseException: Input buffer is smaller than requested object size
+2025-05-30 15:15:38,518 - __main__ - ERROR - Error processing parcels: ParseException: Input buffer is smaller than requested object size
+2025-05-30 15:16:33,457 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 15:16:33,609 - __main__ - INFO - No checkpoints found, running full pipeline
+2025-05-30 15:16:33,609 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 15:16:33,971 - parcel_filter.core.filter - INFO - Converting geometry column in parcels_filtered_initial from WKB_BLOB to GEOMETRY type
+2025-05-30 15:16:33,981 - parcel_filter.core.filter - ERROR - Error loading parcels: Binder Error: No function matches the given name and argument types 'ST_GeomFromWKB(GEOMETRY)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_GeomFromWKB(WKB_BLOB) -> GEOMETRY
+	ST_GeomFromWKB(BLOB) -> GEOMETRY
+
+
+LINE 4:                 ST_AsText(ST_GeomFromWKB(geom)) AS geom_wkt
+                                  ^
+2025-05-30 15:16:33,993 - __main__ - ERROR - Error processing parcels: Binder Error: No function matches the given name and argument types 'ST_GeomFromWKB(GEOMETRY)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_GeomFromWKB(WKB_BLOB) -> GEOMETRY
+	ST_GeomFromWKB(BLOB) -> GEOMETRY
+
+
+LINE 4:                 ST_AsText(ST_GeomFromWKB(geom)) AS geom_wkt
+                                  ^
+2025-05-30 15:17:09,326 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 15:17:09,483 - __main__ - INFO - No checkpoints found, running full pipeline
+2025-05-30 15:17:09,483 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 15:17:09,806 - parcel_filter.core.filter - INFO - Converting geometry column in parcels_filtered_initial from WKB_BLOB to GEOMETRY type
+2025-05-30 15:17:09,958 - parcel_filter.core.filter - INFO - Loaded 2123 parcels after initial filtering
+2025-05-30 15:17:09,958 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
+2025-05-30 15:17:09,960 - parcel_filter.core.filter - ERROR - Error filtering airports: Binder Error: No function matches the given name and argument types 'ST_GeomFromWKB(GEOMETRY)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_GeomFromWKB(WKB_BLOB) -> GEOMETRY
+	ST_GeomFromWKB(BLOB) -> GEOMETRY
+
+
+LINE 8:                     ON ST_Intersects(ST_GeomFromWKB(p.geom), a.geom)
+                                             ^
+2025-05-30 15:17:09,973 - __main__ - ERROR - Error processing parcels: Binder Error: No function matches the given name and argument types 'ST_GeomFromWKB(GEOMETRY)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_GeomFromWKB(WKB_BLOB) -> GEOMETRY
+	ST_GeomFromWKB(BLOB) -> GEOMETRY
+
+
+LINE 8:                     ON ST_Intersects(ST_GeomFromWKB(p.geom), a.geom)
+                                             ^
+2025-05-30 15:17:46,904 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 15:17:47,059 - __main__ - INFO - No checkpoints found, running full pipeline
+2025-05-30 15:17:47,059 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 15:17:47,383 - parcel_filter.core.filter - INFO - Converting geometry column in parcels_filtered_initial from WKB_BLOB to GEOMETRY type
+2025-05-30 15:17:47,521 - parcel_filter.core.filter - INFO - Loaded 2123 parcels after initial filtering
+2025-05-30 15:17:47,521 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
+2025-05-30 15:17:47,675 - parcel_filter.core.filter - INFO - After airport filtering: 2094 parcels
+2025-05-30 15:17:47,675 - parcel_filter.core.filter - INFO - Filtering parcels by distance to transmission lines...
+2025-05-30 15:17:47,702 - parcel_filter.core.filter - INFO - Saving checkpoint: transmission_filtered_100m
+2025-05-30 15:17:47,796 - parcel_filter.core.filter - INFO - After transmission line filtering: 1144 parcels
+2025-05-30 15:17:47,796 - parcel_filter.core.filter - INFO - Loading isochrone data from database
+2025-05-30 15:17:47,829 - parcel_filter.core.filter - INFO - Loaded 6 isochrone polygons
+2025-05-30 15:17:47,829 - parcel_filter.core.filter - INFO - Calculating drive times...
+2025-05-30 15:17:47,838 - parcel_filter.core.filter - ERROR - Error calculating drive times: Binder Error: No function matches the given name and argument types 'ST_GeomFromWKB(GEOMETRY)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_GeomFromWKB(WKB_BLOB) -> GEOMETRY
+	ST_GeomFromWKB(BLOB) -> GEOMETRY
+
+
+LINE 13:                         ST_GeomFromWKB(p.geom) as geom_2d
+                                 ^
+2025-05-30 15:17:48,463 - __main__ - ERROR - Error processing parcels: Binder Error: No function matches the given name and argument types 'ST_GeomFromWKB(GEOMETRY)'. You might need to add explicit type casts.
+	Candidate functions:
+	ST_GeomFromWKB(WKB_BLOB) -> GEOMETRY
+	ST_GeomFromWKB(BLOB) -> GEOMETRY
+
+
+LINE 13:                         ST_GeomFromWKB(p.geom) as geom_2d
+                                 ^
+2025-05-30 15:18:18,104 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 15:18:18,263 - parcel_filter.core.filter - INFO - Loading checkpoint: transmission_filtered_100m
+2025-05-30 15:18:18,293 - __main__ - INFO - Loaded transmission line checkpoint, skipping to drive time calculation
+2025-05-30 15:18:18,404 - parcel_filter.core.filter - INFO - Loading isochrone data from database
+2025-05-30 15:18:18,432 - parcel_filter.core.filter - INFO - Loaded 6 isochrone polygons
+2025-05-30 15:18:18,433 - parcel_filter.core.filter - INFO - Calculating drive times...
+2025-05-30 15:18:18,468 - parcel_filter.core.filter - INFO - Saving checkpoint: drive_times
+2025-05-30 15:18:19,506 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 15:18:19,507 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 15:18:19,507 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_151819
+2025-05-30 15:18:19,536 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_151819/weights_20250530_151819.json
+2025-05-30 15:18:19,813 - pyogrio._io - INFO - Created 1,144 records
+2025-05-30 15:18:19,821 - parcel_filter.core.ranking - INFO - Saved ranked parcels to results/run_20250530_151819/20250530_151819_ranked_parcels.gpkg
+2025-05-30 15:19:01,825 - parcel_filter.core.ranking - INFO - Ranking statistics:
+2025-05-30 15:19:01,825 - parcel_filter.core.ranking - INFO -   Min score: 0.00
+2025-05-30 15:19:01,825 - parcel_filter.core.ranking - INFO -   Max score: 10.00
+2025-05-30 15:19:01,825 - parcel_filter.core.ranking - INFO -   Mean score: 4.52
+2025-05-30 15:19:01,830 - parcel_filter.core.ranking - INFO - Top 5 parcels by ranking:
+2025-05-30 15:19:01,831 - parcel_filter.core.ranking - INFO -   Parcel 0181100000040: Score 10.00
+2025-05-30 15:19:01,831 - parcel_filter.core.ranking - INFO -   Parcel 0155500000069: Score 9.74
+2025-05-30 15:19:01,831 - parcel_filter.core.ranking - INFO -   Parcel 0181335400005: Score 9.43
+2025-05-30 15:19:01,831 - parcel_filter.core.ranking - INFO -   Parcel 0155703300002: Score 9.33
+2025-05-30 15:19:01,831 - parcel_filter.core.ranking - INFO -   Parcel 0155500000020: Score 9.31
+2025-05-30 15:19:01,831 - __main__ - INFO - Results saved in run_20250530_151819 directory
+2025-05-30 15:19:58,645 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 15:19:58,804 - __main__ - INFO - No checkpoints found, running full pipeline
+2025-05-30 15:19:58,804 - parcel_filter.core.filter - INFO - Loading parcels with size > 50 acres and excluding unwanted activities...
+2025-05-30 15:19:59,481 - parcel_filter.core.filter - INFO - Converting geometry column in parcels_filtered_initial from WKB_BLOB to GEOMETRY type
+2025-05-30 15:20:00,528 - parcel_filter.core.filter - INFO - Loaded 19346 parcels after initial filtering
+2025-05-30 15:20:00,529 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
+2025-05-30 15:20:01,882 - parcel_filter.core.filter - INFO - After airport filtering: 19229 parcels
+2025-05-30 15:20:01,882 - parcel_filter.core.filter - INFO - Filtering parcels by distance to transmission lines...
+2025-05-30 15:20:02,002 - parcel_filter.core.filter - INFO - Saving checkpoint: transmission_filtered_100m
+2025-05-30 15:20:03,211 - parcel_filter.core.filter - INFO - After transmission line filtering: 8004 parcels
+2025-05-30 15:20:03,211 - parcel_filter.core.filter - INFO - Loading isochrone data from database
+2025-05-30 15:20:03,239 - parcel_filter.core.filter - INFO - Loaded 6 isochrone polygons
+2025-05-30 15:20:03,239 - parcel_filter.core.filter - INFO - Calculating drive times...
+2025-05-30 15:20:03,332 - parcel_filter.core.filter - INFO - Saving checkpoint: drive_times
+2025-05-30 15:20:04,996 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 15:20:04,996 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 15:20:04,997 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_152004
+2025-05-30 15:20:05,044 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_152004/weights_20250530_152005.json
+2025-05-30 15:20:06,245 - pyogrio._io - INFO - Created 8,004 records
+2025-05-30 15:20:06,274 - parcel_filter.core.ranking - INFO - Saved ranked parcels to results/run_20250530_152004/20250530_152004_ranked_parcels.gpkg
+2025-05-30 15:20:18,994 - parcel_filter.core.ranking - INFO - Ranking statistics:
+2025-05-30 15:20:18,994 - parcel_filter.core.ranking - INFO -   Min score: 0.00
+2025-05-30 15:20:18,994 - parcel_filter.core.ranking - INFO -   Max score: 10.00
+2025-05-30 15:20:18,994 - parcel_filter.core.ranking - INFO -   Mean score: 6.71
+2025-05-30 15:20:19,015 - parcel_filter.core.ranking - INFO - Top 5 parcels by ranking:
+2025-05-30 15:20:19,015 - parcel_filter.core.ranking - INFO -   Parcel 096524100003: Score 10.00
+2025-05-30 15:20:19,016 - parcel_filter.core.ranking - INFO -   Parcel 096513100004: Score 9.82
+2025-05-30 15:20:19,016 - parcel_filter.core.ranking - INFO -   Parcel 096524100003: Score 9.81
+2025-05-30 15:20:19,016 - parcel_filter.core.ranking - INFO -   Parcel 096717100004: Score 9.81
+2025-05-30 15:20:19,016 - parcel_filter.core.ranking - INFO -   Parcel 055515000006: Score 9.81
+2025-05-30 15:20:19,016 - __main__ - INFO - Results saved in run_20250530_152004 directory
+2025-05-30 15:20:19,016 - __main__ - INFO - Generating interactive map...
+2025-05-30 15:20:19,016 - parcel_filter.core.map_viewer - INFO - Creating interactive map
+2025-05-30 15:20:19,202 - parcel_filter.core.map_viewer - INFO - Number of parcels: 8004
+2025-05-30 15:20:19,202 - parcel_filter.core.map_viewer - INFO - Sample normalized rank values: 0    6.552741
+1    5.760640
+2    5.760640
+3    8.236102
+4    6.477835
+Name: parcel_rank_normalized, dtype: float64
+2025-05-30 15:20:20,241 - parcel_filter.core.map_viewer - ERROR - Error adding rextag layers: IO Error: Cannot open file "/Users/gavin/Desktop/Personal/Adams Geospatial/Data/Garrison/IDTool/duckdb_database/parcels.duckdb": No such file or directory
+2025-05-30 15:20:29,079 - parcel_filter.core.map_viewer - INFO - Interactive map saved to results/run_20250530_152004/co_weld_parcels_map.html
+2025-05-30 15:20:29,102 - __main__ - INFO - Interactive map saved to results/run_20250530_152004/co_weld_parcels_map.html
+2025-05-30 15:24:29,093 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 15:24:29,363 - parcel_filter.core.filter - INFO - Loading checkpoint: drive_times
+2025-05-30 15:24:29,402 - __main__ - INFO - Loaded drive time checkpoint, skipping to ranking
+2025-05-30 15:24:30,148 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 15:24:30,149 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 15:24:30,149 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_152430
+2025-05-30 15:24:30,178 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_152430/weights_20250530_152430.json
+2025-05-30 15:24:30,455 - pyogrio._io - INFO - Created 1,144 records
+2025-05-30 15:24:30,463 - parcel_filter.core.ranking - INFO - Saved ranked parcels to results/run_20250530_152430/20250530_152430_ranked_parcels.gpkg
+2025-05-30 15:27:58,485 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 15:27:58,679 - parcel_filter.core.filter - INFO - Loading checkpoint: drive_times
+2025-05-30 15:27:58,709 - __main__ - INFO - Loaded drive time checkpoint, skipping to ranking
+2025-05-30 15:27:59,480 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 15:27:59,480 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 15:27:59,480 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_152759
+2025-05-30 15:27:59,506 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_152759/weights_20250530_152759.json
+2025-05-30 15:27:59,717 - pyogrio._io - INFO - Created 1,144 records
+2025-05-30 15:27:59,724 - parcel_filter.core.ranking - INFO - Saved ranked parcels to results/run_20250530_152759/20250530_152759_ranked_parcels.gpkg
+2025-05-30 15:28:04,458 - parcel_filter.core.ranking - INFO - Ranking statistics:
+2025-05-30 15:28:04,458 - parcel_filter.core.ranking - INFO -   Min score: 0.00
+2025-05-30 15:28:04,458 - parcel_filter.core.ranking - INFO -   Max score: 10.00
+2025-05-30 15:28:04,458 - parcel_filter.core.ranking - INFO -   Mean score: 4.52
+2025-05-30 15:28:04,463 - parcel_filter.core.ranking - INFO - Top 5 parcels by ranking:
+2025-05-30 15:28:04,465 - parcel_filter.core.ranking - INFO -   Parcel 0181100000040: Score 10.00
+2025-05-30 15:28:04,465 - parcel_filter.core.ranking - INFO -   Parcel 0155500000069: Score 9.74
+2025-05-30 15:28:04,466 - parcel_filter.core.ranking - INFO -   Parcel 0181335400005: Score 9.43
+2025-05-30 15:28:04,466 - parcel_filter.core.ranking - INFO -   Parcel 0155703300002: Score 9.33
+2025-05-30 15:28:04,466 - parcel_filter.core.ranking - INFO -   Parcel 0155500000020: Score 9.31
+2025-05-30 15:28:04,466 - __main__ - INFO - Results saved in run_20250530_152759 directory
+2025-05-30 15:28:04,466 - __main__ - INFO - Generating interactive map...
+2025-05-30 15:28:04,468 - parcel_filter.core.map_viewer - INFO - Converted Timestamp column 'saledate' to string
+2025-05-30 15:28:04,469 - parcel_filter.core.map_viewer - INFO - Converted Timestamp column 'fema_flood_zone_data_date' to string
+2025-05-30 15:28:04,470 - parcel_filter.core.map_viewer - INFO - Converted Timestamp column 'll_last_refresh' to string
+2025-05-30 15:28:04,470 - parcel_filter.core.map_viewer - INFO - Converted Timestamp column 'reviseddate' to string
+2025-05-30 15:28:04,480 - parcel_filter.core.map_viewer - INFO - Converted Timestamp column 'll_updated_at' to string
+2025-05-30 15:28:04,481 - parcel_filter.core.map_viewer - INFO - Converted Timestamp column 'usps_vacancy_date' to string
+2025-05-30 15:28:04,482 - parcel_filter.core.map_viewer - INFO - Converted Timestamp column 'docdt' to string
+2025-05-30 15:28:04,483 - parcel_filter.core.map_viewer - INFO - Converted Timestamp column 'dateadd' to string
+2025-05-30 15:28:04,483 - parcel_filter.core.map_viewer - INFO - Converted Timestamp column 'datechg' to string
+2025-05-30 15:28:04,507 - parcel_filter.core.map_viewer - INFO - Transformed parcels to WGS84 (EPSG:4326) for mapping
+2025-05-30 15:28:05,805 - parcel_filter.core.map_viewer - INFO - Created interactive map at results/run_20250530_152759/co_adams_parcel_map.html
+2025-05-30 16:04:38,921 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 16:04:38,950 - __main__ - ERROR - Error processing parcels: IO Error: Could not set lock on file "/Users/gavin/Desktop/Personal/Adams Geospatial/Data/Garrison/IDTool/data/LandAI.ddb": Conflicting lock is held in /Applications/DBeaver.app/Contents/MacOS/dbeaver (PID 594) by user gavin. See also https://duckdb.org/docs/stable/connect/concurrency
+2025-05-30 16:04:49,157 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 16:04:49,371 - parcel_filter.core.filter - INFO - Found 12 unique power providers
+2025-05-30 16:04:55,876 - __main__ - INFO - Selected power provider: Xcel
+2025-05-30 16:04:55,904 - parcel_filter.core.filter - INFO - Loading checkpoint: drive_times
+2025-05-30 16:04:55,940 - __main__ - INFO - Loaded drive time checkpoint, skipping to ranking
+2025-05-30 16:04:57,544 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 16:04:57,545 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 16:04:57,546 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_160457
+2025-05-30 16:04:57,570 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_160457/weights_20250530_160457.json
+2025-05-30 16:04:57,827 - pyogrio._io - INFO - Created 1,144 records
+2025-05-30 16:04:57,834 - parcel_filter.core.ranking - INFO - Saved ranked parcels to results/run_20250530_160457/20250530_160457_ranked_parcels.gpkg
+2025-05-30 16:05:22,268 - parcel_filter.core.ranking - INFO - Ranking statistics:
+2025-05-30 16:05:22,268 - parcel_filter.core.ranking - INFO -   Min score: 0.00
+2025-05-30 16:05:22,268 - parcel_filter.core.ranking - INFO -   Max score: 10.00
+2025-05-30 16:05:22,268 - parcel_filter.core.ranking - INFO -   Mean score: 4.52
+2025-05-30 16:05:22,276 - parcel_filter.core.ranking - INFO - Top 5 parcels by ranking:
+2025-05-30 16:05:22,277 - parcel_filter.core.ranking - INFO -   Parcel 0181100000040: Score 10.00
+2025-05-30 16:05:22,277 - parcel_filter.core.ranking - INFO -   Parcel 0155500000069: Score 9.74
+2025-05-30 16:05:22,277 - parcel_filter.core.ranking - INFO -   Parcel 0181335400005: Score 9.43
+2025-05-30 16:05:22,277 - parcel_filter.core.ranking - INFO -   Parcel 0155703300002: Score 9.33
+2025-05-30 16:05:22,277 - parcel_filter.core.ranking - INFO -   Parcel 0155500000020: Score 9.31
+2025-05-30 16:05:22,277 - __main__ - INFO - Results saved in run_20250530_160457 directory
+2025-05-30 16:05:31,006 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-05-30 16:05:31,153 - parcel_filter.core.filter - INFO - Found 12 unique power providers
+2025-05-30 16:05:48,758 - __main__ - INFO - Selected power provider: Xcel
+2025-05-30 16:05:48,784 - parcel_filter.core.filter - INFO - Loading checkpoint: drive_times
+2025-05-30 16:05:48,820 - __main__ - INFO - Loaded drive time checkpoint, skipping to ranking
+2025-05-30 16:05:49,777 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-05-30 16:05:49,777 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.1, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-05-30 16:05:49,777 - parcel_filter.core.ranking - INFO - Created run directory: results/run_20250530_160549
+2025-05-30 16:05:49,802 - parcel_filter.core.ranking - INFO - Saved weights and rankings to results/run_20250530_160549/weights_20250530_160549.json
+2025-05-30 16:05:50,003 - pyogrio._io - INFO - Created 1,144 records
+2025-05-30 16:05:50,010 - parcel_filter.core.ranking - INFO - Saved ranked parcels to results/run_20250530_160549/20250530_160549_ranked_parcels.gpkg
+2025-05-30 16:06:18,913 - parcel_filter.core.ranking - INFO - Ranking statistics:
+2025-05-30 16:06:18,914 - parcel_filter.core.ranking - INFO -   Min score: 0.00
+2025-05-30 16:06:18,914 - parcel_filter.core.ranking - INFO -   Max score: 10.00
+2025-05-30 16:06:18,914 - parcel_filter.core.ranking - INFO -   Mean score: 4.52
+2025-05-30 16:06:18,921 - parcel_filter.core.ranking - INFO - Top 5 parcels by ranking:
+2025-05-30 16:06:18,922 - parcel_filter.core.ranking - INFO -   Parcel 0181100000040: Score 10.00
+2025-05-30 16:06:18,922 - parcel_filter.core.ranking - INFO -   Parcel 0155500000069: Score 9.74
+2025-05-30 16:06:18,922 - parcel_filter.core.ranking - INFO -   Parcel 0181335400005: Score 9.43
+2025-05-30 16:06:18,922 - parcel_filter.core.ranking - INFO -   Parcel 0155703300002: Score 9.33
+2025-05-30 16:06:18,922 - parcel_filter.core.ranking - INFO -   Parcel 0155500000020: Score 9.31
+2025-05-30 16:06:18,922 - __main__ - INFO - Results saved in run_20250530_160549 directory

@@ -1,0 +1,7 @@
+appveyor
+ci
+docs
+examples
+fiona
+scripts
+tests

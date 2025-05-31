@@ -1,0 +1,10 @@
+/data/
+/logs/
+/parcel_filter/data/
+/parcel_filter/logs/
+/parcel_filter/parcel_filter.egg-info/
+/parcel_filter/parcel_filter.egg-info/
+/parcel_filter/parcel_filter.egg-info/
+
+LandAI.ddb
+/results/
