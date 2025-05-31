@@ -5,7 +5,7 @@ import sys
 import os
 from pathlib import Path
 
-VERSION = "0.2.1"
+VERSION = "0.2.3"
 GITHUB_REPO = "https://github.com/sailbot24/IDTool.git"  # Updated repository URL
 
 def ensure_environment():
