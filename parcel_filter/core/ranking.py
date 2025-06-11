@@ -13,16 +13,22 @@ import matplotlib
 logger = logging.getLogger(__name__)
 
 class ParcelRanker:
-    def __init__(self, ranking_url: str):
+    def __init__(self, ranking_url: str, state: str, county: str, utility_provider: Optional[str] = None):
         """
         Initialize the ParcelRanker with ranking data from Google Sheets.
         
         Args:
             ranking_url: URL to the Google Sheets document containing ranking data
+            state: Two-letter state code (e.g., 'az')
+            county: County name (e.g., 'maricopa')
+            utility_provider: Name of the utility provider filter (optional)
         """
         self.ranking_url = ranking_url
         self.ranking_data = None
         self.weights = None
+        self.state = state.lower()
+        self.county = county.lower()
+        self.utility_provider = utility_provider.lower().replace(' ', '_') if utility_provider else 'all_providers'
         
     def load_ranking_data(self) -> None:
         """Load ranking data and weights from Google Sheets."""
@@ -113,7 +119,7 @@ class ParcelRanker:
             # Replace NA values with 0
             return normalized.fillna(0)
     
-    def calculate_rankings(self, parcels: gpd.GeoDataFrame, output_dir: str) -> gpd.GeoDataFrame:
+    def calculate_rankings(self, parcels: gpd.GeoDataFrame, output_dir: str, show_graph: bool = False) -> gpd.GeoDataFrame:
         """Calculate rankings for parcels based on various criteria."""
         if self.ranking_data is None or self.weights is None:
             self.load_ranking_data()
@@ -121,8 +127,8 @@ class ParcelRanker:
         # Create timestamp for this run
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
-        # Create a run-specific directory
-        run_dir = f"{output_dir}/run_{timestamp}"
+        # Create a run-specific directory with state, county, and utility
+        run_dir = f"{output_dir}/{self.state}_{self.county}_{self.utility_provider}_{timestamp}"
         os.makedirs(run_dir, exist_ok=True)
         logger.info(f"Created run directory: {run_dir}")
             
@@ -197,26 +203,39 @@ class ParcelRanker:
             raise ValueError("No geometry column found in parcels DataFrame")
         
         # Save results as GeoPackage in the run directory
-        gpkg_file = f"{run_dir}/{timestamp}_ranked_parcels.gpkg"
+        gpkg_file = f"{run_dir}/{self.state}_{self.county}_{self.utility_provider}_{timestamp}_ranked_parcels.gpkg"
+        
+        # Ensure all required fields are included
+        required_fields = [
+            'est_name', 'est_sub_oper', 'est_operator', 'est_owner',
+            'et_name', 'et_sub_oper', 'et_operator', 'et_owner',
+            'et_kv', 'et_distance'
+        ]
+        
+        # Check if any required fields are missing and add them with default values
+        for field in required_fields:
+            if field not in parcels.columns:
+                parcels[field] = None
+                logger.warning(f"Field {field} not found in parcels data, adding with NULL values")
+        
         parcels.to_file(gpkg_file, driver="GPKG")
         logger.info(f"Saved ranked parcels to {gpkg_file}")
         
+        # Only show the graph if show_graph is True
+        if show_graph:
+            # Suppress matplotlib font manager messages
+            matplotlib.set_loglevel('error')
 
-        # Suppress matplotlib font manager messages
-        matplotlib.set_loglevel('error')
-
-        # Plot a distribution of the parcel_rank_normalized values 
-        plt.figure(figsize=(10, 6))
-        plt.hist(parcels['parcel_rank_normalized'], bins=20, edgecolor='black')
-        plt.title('Distribution of Parcel Rankings')
-        plt.xlabel('Normalized Ranking Score')
-        plt.ylabel('Frequency')
-        mean_value = parcels['parcel_rank_normalized'].mean()
-        plt.axvline(x=mean_value, color='red', linestyle='--', linewidth=2, label=f'Mean: {mean_value:.2f}')
-        plt.legend()
-        plt.show()
-    
-        
+            # Plot a distribution of the parcel_rank_normalized values 
+            plt.figure(figsize=(10, 6))
+            plt.hist(parcels['parcel_rank_normalized'], bins=20, edgecolor='black')
+            plt.title('Distribution of Parcel Rankings')
+            plt.xlabel('Normalized Ranking Score')
+            plt.ylabel('Frequency')
+            mean_value = parcels['parcel_rank_normalized'].mean()
+            plt.axvline(x=mean_value, color='red', linestyle='--', linewidth=2, label=f'Mean: {mean_value:.2f}')
+            plt.legend()
+            plt.show()
 
         # Log ranking statistics
         logger.info("Ranking statistics:")

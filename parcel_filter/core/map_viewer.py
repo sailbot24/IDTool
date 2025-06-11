@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 import shapely.wkt as wkt
 import json
+from shapely.geometry import Point
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,8 @@ def create_parcel_map(parcels: gpd.GeoDataFrame, state: str, county: str, output
                      isochrones: Optional[gpd.GeoDataFrame] = None,
                      poi_data: Optional[Dict[str, gpd.GeoDataFrame]] = None,
                      poi_icons: Optional[Dict[str, str]] = None,
-                     poi_colors: Optional[Dict[str, str]] = None) -> None:
+                     poi_colors: Optional[Dict[str, str]] = None,
+                     db_connection = None) -> None:
     """
     Create an interactive map of parcels with ranking visualization.
     
@@ -35,23 +37,44 @@ def create_parcel_map(parcels: gpd.GeoDataFrame, state: str, county: str, output
         poi_data: Optional dictionary of POI GeoDataFrames
         poi_icons: Optional dictionary mapping POI types to icon names
         poi_colors: Optional dictionary mapping POI types to colors
+        db_connection: Optional DuckDB connection for loading substations
     """
+    # Default center points for each state (approximate)
+    default_centers = {
+        'co': [39.0, -105.5],  # Colorado
+        'az': [34.0, -112.0],  # Arizona
+    }
     try:
         # Convert any Timestamp columns to strings
         for col in parcels.columns:
             if pd.api.types.is_datetime64_any_dtype(parcels[col]):
                 parcels[col] = parcels[col].astype(str)
                 logger.info(f"Converted Timestamp column '{col}' to string")
-        
-        # Ensure parcels are in WGS84 (EPSG:4326) for mapping
+
+        logger.info(f"Number of parcels passed to map: {len(parcels)}")
+        logger.info(f"Sample of parcels:\n{parcels.head()}\nColumns: {parcels.columns.tolist()}")
+
+        # Check if parcels is empty
+        if parcels.empty:
+            logger.error("No parcels to display on the map. Skipping map creation.")
+            return
+
+        # Ensure parcels are in EPSG:4326 for folium
         if parcels.crs is not None and parcels.crs.to_epsg() != 4326:
             parcels = parcels.to_crs(epsg=4326)
             logger.info("Transformed parcels to WGS84 (EPSG:4326) for mapping")
-        
-        # Calculate center point for the map
-        center_lat = parcels.geometry.centroid.y.mean()
-        center_lon = parcels.geometry.centroid.x.mean()
-        
+
+        # Calculate bounds and center
+        bounds = parcels.total_bounds
+        logger.info(f"Parcel bounds: {bounds}")
+        if not any(pd.isna(bounds)) and not any(np.isinf(bounds)):
+            center_lon = (bounds[0] + bounds[2]) / 2
+            center_lat = (bounds[1] + bounds[3]) / 2
+            logger.info(f"Map center: lat={center_lat}, lon={center_lon}")
+        else:
+            logger.warning("Invalid bounds, using default center")
+            center_lat, center_lon = default_centers.get(state.lower(), [39.0, -105.5])
+
         # Create base map
         m = folium.Map(
             location=[center_lat, center_lon],
@@ -113,18 +136,22 @@ def create_parcel_map(parcels: gpd.GeoDataFrame, state: str, county: str, output
                     'fillOpacity': 0.7
                 }
             
-            # Add layers with fixed 1-point ranges
-            for i in range(10):
-                min_rank = i
-                max_rank = i + 1
+            # Group parcels by rank ranges to reduce the number of layers
+            rank_ranges = [
+                (0, 2, 'Rank 0-2'),
+                (2, 4, 'Rank 2-4'),
+                (4, 6, 'Rank 4-6'),
+                (6, 8, 'Rank 6-8'),
+                (8, 11, 'Rank 8-10')
+            ]
+            
+            for min_rank, max_rank, name in rank_ranges:
                 group_parcels = parcels[
                     (parcels['parcel_rank_normalized'] >= min_rank) & 
                     (parcels['parcel_rank_normalized'] < max_rank)
                 ]
                 
                 if not group_parcels.empty:
-                    name = f"Rank {min_rank} to {max_rank}"
-                    
                     folium.GeoJson(
                         group_parcels.__geo_interface__,
                         style_function=style_function,
@@ -135,20 +162,13 @@ def create_parcel_map(parcels: gpd.GeoDataFrame, state: str, county: str, output
                             max_width=275
                         ),
                         name=name,
-                        show=(min_rank >= 8)  # Only show ranks 8-10 by default
+                        show=(min_rank >= 6)  # Only show high ranks by default
                     ).add_to(m)
         
         # Add isochrones if provided
         if isochrones is not None:
-            # Convert any Timestamp columns in isochrones
-            for col in isochrones.columns:
-                if pd.api.types.is_datetime64_any_dtype(isochrones[col]):
-                    isochrones[col] = isochrones[col].astype(str)
-                    logger.info(f"Converted Timestamp column '{col}' to string in isochrones")
-            
             if isochrones.crs is not None and isochrones.crs.to_epsg() != 4326:
                 isochrones = isochrones.to_crs(epsg=4326)
-                logger.info("Transformed isochrones to WGS84 (EPSG:4326) for mapping")
             
             # Add isochrones with different colors for each time
             for idx, row in isochrones.iterrows():
@@ -164,18 +184,40 @@ def create_parcel_map(parcels: gpd.GeoDataFrame, state: str, county: str, output
                     show=True
                 ).add_to(m)
         
+        # Add substations from rextag.electricsubstations, cropped to parcel bounds
+        if db_connection is not None and not any(pd.isna(bounds)) and not any(np.isinf(bounds)):
+            try:
+                minx, miny, maxx, maxy = bounds
+                substations_query = f"""
+                    SELECT *, ST_AsText(geom) as geom_wkt
+                    FROM rextag.electricsubstations
+                    WHERE ST_Within(geom, ST_MakeEnvelope({minx}, {miny}, {maxx}, {maxy}, 4326))
+                """
+                substations_df = db_connection.execute(substations_query).df()
+                if not substations_df.empty:
+                    substations_df['geometry'] = gpd.GeoSeries.from_wkt(substations_df['geom_wkt'])
+                    substations_gdf = gpd.GeoDataFrame(substations_df.drop(columns=['geom_wkt']), geometry='geometry', crs=4326)
+                    for idx, row in substations_gdf.iterrows():
+                        folium.Marker(
+                            location=[row.geometry.y, row.geometry.x],
+                            popup=folium.Popup(
+                                f"<b>Substation</b><br>"
+                                f"Name: {row.get('name', 'N/A')}<br>"
+                                f"Voltage: {row.get('voltage', 'N/A')}<br>"
+                                f"Operator: {row.get('operator', 'N/A')}",
+                                max_width=200
+                            ),
+                            icon=folium.Icon(color='red', icon='bolt', prefix='fa'),
+                            name='Substations'
+                        ).add_to(m)
+            except Exception as e:
+                logger.warning(f"Could not load substations: {str(e)}")
+        
         # Add POI data if provided
         if poi_data is not None:
             for poi_type, poi_gdf in poi_data.items():
-                # Convert any Timestamp columns in POI data
-                for col in poi_gdf.columns:
-                    if pd.api.types.is_datetime64_any_dtype(poi_gdf[col]):
-                        poi_gdf[col] = poi_gdf[col].astype(str)
-                        logger.info(f"Converted Timestamp column '{col}' to string in {poi_type} POIs")
-                
                 if poi_gdf.crs is not None and poi_gdf.crs.to_epsg() != 4326:
                     poi_gdf = poi_gdf.to_crs(epsg=4326)
-                    logger.info(f"Transformed {poi_type} POIs to WGS84 (EPSG:4326) for mapping")
                 
                 # Get icon and color for this POI type
                 icon_name = poi_icons.get(poi_type, 'info-sign') if poi_icons else 'info-sign'
