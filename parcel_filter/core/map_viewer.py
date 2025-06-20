@@ -13,6 +13,7 @@ import numpy as np
 import shapely.wkt as wkt
 import json
 from shapely.geometry import Point
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -45,11 +46,30 @@ def create_parcel_map(parcels: gpd.GeoDataFrame, state: str, county: str, output
         'az': [34.0, -112.0],  # Arizona
     }
     try:
-        # Convert any Timestamp columns to strings
+        # Convert any date/datetime columns to strings to avoid JSON serialization issues
         for col in parcels.columns:
+            # Check for pandas datetime types
             if pd.api.types.is_datetime64_any_dtype(parcels[col]):
                 parcels[col] = parcels[col].astype(str)
                 logger.info(f"Converted Timestamp column '{col}' to string")
+            # Check for Python date objects (from PostgreSQL)
+            elif parcels[col].dtype == 'object':
+                # Sample a few non-null values to check if they're dates
+                sample_values = parcels[col].dropna().head(10)
+                if len(sample_values) > 0:
+                    first_value = sample_values.iloc[0]
+                    if isinstance(first_value, (pd.Timestamp, datetime.date, datetime.datetime)):
+                        parcels[col] = parcels[col].astype(str)
+                        logger.info(f"Converted date column '{col}' to string")
+                    # Also check for string representations of dates
+                    elif isinstance(first_value, str) and any(char.isdigit() for char in str(first_value)[:10]):
+                        # This might be a date string, try to parse and convert
+                        try:
+                            pd.to_datetime(parcels[col], errors='coerce')
+                            parcels[col] = parcels[col].astype(str)
+                            logger.info(f"Converted date string column '{col}' to string")
+                        except:
+                            pass  # Not a date string, leave as is
 
         logger.info(f"Number of parcels passed to map: {len(parcels)}")
         logger.info(f"Sample of parcels:\n{parcels.head()}\nColumns: {parcels.columns.tolist()}")

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#! source venv/bin/activate
 import argparse
 import logging
 from pathlib import Path
@@ -9,9 +9,14 @@ import geopandas as gpd
 from parcel_filter.core.map_viewer import create_parcel_map
 from parcel_filter.core.version import VERSION, GITHUB_REPO, check_for_updates, setup_environment, update_application, ensure_environment
 from datetime import datetime
+import json
+from sqlalchemy import text
 
 def setup_logging():
     """Configure logging settings."""
+    # Clear the log file at the start of each run
+    with open('parcel_processing.log', 'w'):
+        pass
     # Set PIL logging to WARNING level to suppress debug messages
     logging.getLogger('PIL').setLevel(logging.WARNING)
     
@@ -24,16 +29,91 @@ def setup_logging():
         ]
     )
 
+def read_db_config(config_path):
+    """Read database configuration from a file.
+    
+    Args:
+        config_path: Path to the configuration file
+        
+    Returns:
+        Dictionary containing database configuration
+    """
+    config = {}
+    try:
+        with open(config_path, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#'):
+                    key, value = line.split('=', 1)
+                    config[key.strip()] = value.strip()
+        return config
+    except Exception as e:
+        logging.error(f"Error reading database configuration: {e}")
+        raise
+
+def run_parcel_pipeline(parcel_filter, selected_provider=None):
+    """Run the complete parcel filtering and ranking pipeline in the correct order.
+    
+    Args:
+        parcel_filter: ParcelFilter instance
+        selected_provider: Optional power provider to filter by
+        
+    Returns:
+        bool: True if pipeline completed successfully, False otherwise
+    """
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Step 1: Load parcels
+        logger.info("Step 1: Loading parcels...")
+        parcel_filter.load_parcels()
+        
+        # Step 2: Apply filters in correct order
+        logger.info("Step 2: Applying filters...")
+        parcel_filter.filter_airports()
+        parcel_filter.filter_transmission_lines()
+        if selected_provider:
+            parcel_filter.filter_power_provider(selected_provider)
+            
+        # Step 3: Calculate drive times (must be done before ranking)
+        logger.info("Step 3: Calculating drive times...")
+        parcel_filter.calculate_drive_times()
+        
+        # Step 4: Rank parcels
+        logger.info("Step 4: Ranking parcels...")
+        parcel_filter.rank_parcels_in_postgis()
+        
+        # Step 5: Save results
+        logger.info("Step 5: Saving results...")
+        parcel_filter.save_results_to_db()
+        
+        # Step 6: Cleanup
+        logger.info("Step 6: Cleaning up temporary data...")
+        parcel_filter.cleanup()
+        
+        logger.info("Pipeline completed successfully")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Pipeline failed: {str(e)}")
+        return False
+
 def main():
     """Main function to run the parcel filtering and ranking process."""
     parser = argparse.ArgumentParser(description="Parcel Filtering and Ranking Tool")
     parser.add_argument("--state", required=True, help="Two-letter state code (e.g., az)")
     parser.add_argument("--county", help="County name (e.g., maricopa). If not provided, will analyze all counties in the state.")
-    parser.add_argument("--data-dir", help="Base directory containing data. If not provided, assumes 'data'")
+    parser.add_argument("--db-config", default="db_config.txt", help="Path to database configuration file (default: db_config.txt)")
+    parser.add_argument("--min-size", type=float, default=50.0,
+                      help="Minimum parcel size in acres")
+    parser.add_argument("--transmission-distance", type=float, default=100.0,
+                      help="Maximum distance to transmission lines in meters")
+    parser.add_argument("--provider", type=str,
+                      help="Power utility provider to filter by")
     parser.add_argument("--ranking-url", 
-                       default='https://docs.google.com/spreadsheets/d/1nzLgafXoqqMcpherLi5jm348cX7rPtOgIDfvTVEp6us/edit?gid=843285247#gid=843285247',
-                       help="URL to Google Sheets document containing ranking data")
-    parser.add_argument("--force", action="store_true", help="Force re-run of all steps, ignoring checkpoints")
+                      default='https://docs.google.com/spreadsheets/d/1nzLgafXoqqMcpherLi5jm348cX7rPtOgIDfvTVEp6us/edit?gid=843285247#gid=843285247',
+                      help="URL to Google Sheets document containing ranking data")
+    parser.add_argument("--force", action="store_true", help="Force re-run of all steps")
     parser.add_argument("--quick-view", action="store_true", help="Create and display an interactive map of the results")
     parser.add_argument("--update", action="store_true", help="Check for and install updates")
     parser.add_argument("--setup-env", action="store_true", help="Set up or repair the Python environment and exit")
@@ -45,7 +125,7 @@ def main():
         setup_logging()
         logger = logging.getLogger(__name__)
 
-        # Handle update argument
+        # Handle update and setup-env arguments
         if args.update:
             if update_application():
                 logger.info("Update completed successfully")
@@ -53,7 +133,6 @@ def main():
                 logger.error("Update failed")
             return
 
-        # Handle setup-env argument
         if args.setup_env:
             if setup_environment():
                 logger.info("Environment setup completed successfully.")
@@ -61,98 +140,103 @@ def main():
                 logger.error("Environment setup failed.")
             return
 
-        # Ensure environment is set up (fast check, only create if missing)
+        # Ensure environment is set up
         if not ensure_environment():
             logger.error("Failed to ensure environment. Please check the logs for details.")
             return
 
-        # Initialize ParcelFilter
-        parcel_filter = ParcelFilter(
-            state=args.state,
-            county=args.county,
-            data_dir=args.data_dir,
-            ranking_url=args.ranking_url
-        )
-        
-        with parcel_filter:
-            # Get list of power providers
-            providers = parcel_filter.get_power_providers()
+        # Load database configuration
+        try:
+            with open(args.db_config, 'r') as f:
+                db_config = {}
+                for line in f:
+                    key, value = line.strip().split('=')
+                    db_config[key.strip()] = value.strip()
+            logger.info(f"Using database configuration from {args.db_config}")
             
-            if not providers:
-                logger.error("No power providers found in the data")
-                return
+            # Initialize parcel filter
+            parcel_filter = ParcelFilter(
+                state=args.state,
+                county=args.county,
+                db_config=db_config,
+                ranking_url=args.ranking_url,
+                transmission_distance=args.transmission_distance
+            )
+            
+            with parcel_filter:
+                # Get list of power providers
+                providers = parcel_filter.get_power_providers()
                 
-            # Display available providers
-            print("\nAvailable power providers:")
-            for i, provider in enumerate(providers, 1):
-                print(f"{i}. {provider}")
-            print("0. No provider filter (include all parcels)")
-            
-            # Get user selection
-            while True:
-                try:
-                    choice = int(input("\nSelect a power provider (enter number): "))
-                    if 0 <= choice <= len(providers):
-                        break
-                    print("Invalid selection. Please try again.")
-                except ValueError:
-                    print("Please enter a number.")
-            
-            if choice == 0:
-                logger.info("No power provider filter selected")
-                selected_provider = None
-            else:
-                selected_provider = providers[choice - 1]
-                logger.info(f"Selected power provider: {selected_provider}")
-            
-            if args.force:
-                logger.info("Force flag set, running full pipeline")
-                parcel_filter.load_parcels(min_size=50)
-                parcel_filter.filter_airports()
-                parcel_filter.filter_transmission_lines(100.0)
-                parcel_filter.filter_power_provider(selected_provider)
-                parcel_filter.calculate_drive_times()
-            else:
-                # Try to load from checkpoints
-                if parcel_filter.load_checkpoint("drive_times", "parcels_with_drive_times"):
-                    logger.info("Loaded drive time checkpoint, skipping to ranking")
-                    parcel_filter.filtered_parcels = parcel_filter._table_to_gdf("SELECT * FROM parcels_with_drive_times")
+                if not providers:
+                    logger.error("No power providers found in the data")
+                    return
+                    
+                # Display available providers
+                print("\nAvailable power providers:")
+                for i, provider in enumerate(providers, 1):
+                    print(f"{i}. {provider}")
+                print("0. No provider filter (include all parcels)")
+                
+                # Get user selection
+                while True:
+                    try:
+                        choice = int(input("\nSelect a power provider (enter number): "))
+                        if 0 <= choice <= len(providers):
+                            break
+                        print("Invalid selection. Please try again.")
+                    except ValueError:
+                        print("Please enter a number.")
+                
+                selected_provider = None if choice == 0 else providers[choice - 1]
+                logger.info(f"Selected power provider: {selected_provider if selected_provider else 'None'}")
+                
+                # Run the pipeline
+                if run_parcel_pipeline(parcel_filter, selected_provider):
+                    # Show quick view if requested
+                    if args.quick_view:
+                        # Create results directory
+                        results_dir = Path("results")
+                        results_dir.mkdir(exist_ok=True)
+                        
+                        # Create timestamp for the output directory
+                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        output_dir = results_dir / f"{parcel_filter.state}_{parcel_filter.county}_{selected_provider if selected_provider else 'all_providers'}_{timestamp}"
+                        output_dir.mkdir(exist_ok=True)
+                        
+                        # Load ranked parcels directly from the database
+                        final_table = parcel_filter.get_final_results_table()
+                        if final_table:
+                            logger.info(f"Loading ranked parcels from database table: {final_table}")
+                            ranked_parcels = gpd.read_postgis(
+                                f"SELECT * FROM {final_table}",
+                                parcel_filter.db_utils.engine,
+                                geom_col='geom'
+                            )
+                            
+                            # Create and display the interactive map
+                            create_parcel_map(
+                                ranked_parcels,
+                                args.state,
+                                args.county if args.county else "all_counties",
+                                output_dir,
+                                db_connection=parcel_filter.db_utils.engine
+                            )
+                        else:
+                            logger.error("No final results table found. Cannot create quick view.")
                 else:
-                    # Check for transmission line checkpoint
-                    checkpoint_name = f"transmission_filtered_{int(100.0)}m"
-                    if parcel_filter.load_checkpoint(checkpoint_name, "parcels_filtered_transmission"):
-                        logger.info("Loaded transmission line checkpoint, skipping to provider filter")
-                        parcel_filter.filtered_parcels = parcel_filter._table_to_gdf("SELECT * FROM parcels_filtered_transmission")
-                        parcel_filter.filter_power_provider(selected_provider)
-                        parcel_filter.calculate_drive_times()
-                    else:
-                        # No checkpoints found, run full pipeline
-                        logger.info("No checkpoints found, running full pipeline")
-                        parcel_filter.load_parcels(min_size=50)
-                        parcel_filter.filter_airports()
-                        parcel_filter.filter_transmission_lines(100.0)
-                        parcel_filter.filter_power_provider(selected_provider)
-                        parcel_filter.calculate_drive_times()
-            
-            # Calculate rankings
-            ranked_parcels = parcel_filter.ranker.calculate_rankings(parcel_filter.filtered_parcels, "results", show_graph=args.show_graph)
-            
-            # Log completion
-            logger.info(f"Results saved in {parcel_filter.ranker.state}_{parcel_filter.ranker.county}_{parcel_filter.ranker.utility_provider}_{datetime.now().strftime('%Y%m%d_%H%M%S')} directory")
-            
-            # If quick-view is enabled, create and display the interactive map
-            if args.quick_view:
-                create_parcel_map(
-                    ranked_parcels,
-                    args.state,
-                    args.county if args.county else "all_counties",
-                    Path("results") / f"{parcel_filter.ranker.state}_{parcel_filter.ranker.county}_{parcel_filter.ranker.utility_provider}_{datetime.now().strftime('%Y%m%d_%H%M%S')}",  # Save map in the same directory as ranked results
-                    db_connection=parcel_filter.con  # Pass the database connection
-                )
+                    logger.error("Pipeline failed. Check the logs for details.")
                 
+        except Exception as e:
+            logger.error(f"Error processing parcels: {str(e)}")
+            raise
+
     except Exception as e:
-        logger.error(f"Error processing parcels: {str(e)}")
+        logger.error(f"Error in main pipeline: {e}")
         raise
+    finally:
+        # Ensure connection is closed
+        if 'parcel_filter' in locals() and parcel_filter.db_utils.engine is not None:
+            parcel_filter.db_utils.engine.dispose()
 
 if __name__ == '__main__':
     main() 
