@@ -1,6 +1,7 @@
 import psycopg2
 import logging
 import pandas as pd
+import re
 from pathlib import Path
 from typing import List, Optional, Union, Dict, Any
 from .ranking import ParcelRanker
@@ -327,10 +328,27 @@ class ParcelFilter:
             raise
 
     def set_utility_filter(self, utility: str) -> None:
-        """Set the utility filter and initialize the ranker."""
+        """Set the utility filter and update the ranker."""
         self.utility_filter = utility
-        if self.ranking_url:
-            self.ranker = ParcelRanker(self.ranking_url, self.state, self.county, self.utility_filter)
+        if self.ranking_url and self.ranker:
+            # Update the existing ranker's utility provider (sanitized for file paths)
+            if utility:
+                # Convert to lowercase and replace spaces with underscores
+                sanitized = utility.lower().replace(' ', '_')
+                # Remove or replace invalid characters for file paths
+                sanitized = re.sub(r'[^a-z0-9_]', '', sanitized)
+                # Ensure it doesn't start with a number
+                if sanitized and sanitized[0].isdigit():
+                    sanitized = 'provider_' + sanitized
+                # Ensure it's not empty
+                if not sanitized:
+                    sanitized = 'unknown_provider'
+                self.ranker.utility_provider = sanitized
+            else:
+                self.ranker.utility_provider = 'all_providers'
+        elif self.ranking_url and not self.ranker:
+            # Create a new ranker if one doesn't exist
+            self.ranker = ParcelRanker(self.ranking_url, self.state, self.county, utility)
 
     def save_results_to_db(self, table_name: str = None) -> None:
         """Save the filtered and ranked parcels to the results schema in PostgreSQL.
@@ -530,7 +548,21 @@ class ParcelFilter:
                 
                 # Generate table name for the final results
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                final_table_name = f"results.{self.state}_{self.county}_{self.utility_filter}_{timestamp}"
+                # Sanitize utility filter name for PostgreSQL table name
+                if self.utility_filter:
+                    # Convert to lowercase and replace spaces with underscores
+                    utility_name = self.utility_filter.lower().replace(' ', '_')
+                    # Remove or replace invalid PostgreSQL identifier characters
+                    utility_name = re.sub(r'[^a-z0-9_]', '', utility_name)
+                    # Ensure it doesn't start with a number
+                    if utility_name and utility_name[0].isdigit():
+                        utility_name = 'provider_' + utility_name
+                    # Ensure it's not empty
+                    if not utility_name:
+                        utility_name = 'unknown_provider'
+                else:
+                    utility_name = 'all_providers'
+                final_table_name = f"results.{self.state}_{self.county}_{utility_name}_{timestamp}"
                 
                 # Create the final ranked parcels table as a permanent table
                 conn.execute(text(f"""

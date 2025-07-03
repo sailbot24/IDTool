@@ -28,7 +28,22 @@ class ParcelRanker:
         self.weights = None
         self.state = state.lower()
         self.county = county.lower()
-        self.utility_provider = utility_provider.lower().replace(' ', '_') if utility_provider else 'all_providers'
+        # Sanitize utility provider name for file paths and table names
+        if utility_provider:
+            # Convert to lowercase and replace spaces with underscores
+            sanitized = utility_provider.lower().replace(' ', '_')
+            # Remove or replace invalid characters for file paths
+            import re
+            sanitized = re.sub(r'[^a-z0-9_]', '', sanitized)
+            # Ensure it doesn't start with a number
+            if sanitized and sanitized[0].isdigit():
+                sanitized = 'provider_' + sanitized
+            # Ensure it's not empty
+            if not sanitized:
+                sanitized = 'unknown_provider'
+            self.utility_provider = sanitized
+        else:
+            self.utility_provider = 'all_providers'
         
     def load_ranking_data(self) -> None:
         """Load ranking data and weights from Google Sheets."""

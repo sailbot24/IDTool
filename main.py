@@ -74,6 +74,8 @@ def run_parcel_pipeline(parcel_filter, selected_provider=None):
         parcel_filter.filter_transmission_lines()
         if selected_provider:
             parcel_filter.filter_power_provider(selected_provider)
+            # Set the utility filter for table naming
+            parcel_filter.set_utility_filter(selected_provider)
             
         # Step 3: Calculate drive times (must be done before ranking)
         logger.info("Step 3: Calculating drive times...")
@@ -91,7 +93,7 @@ def run_parcel_pipeline(parcel_filter, selected_provider=None):
         logger.info("Step 6: Cleaning up temporary data...")
         parcel_filter.cleanup()
         
-        logger.info("Pipeline completed successfully")
+        logger.info("PIPELINE COMPLETED SUCCESSFULLY")
         return True
         
     except Exception as e:
@@ -200,7 +202,22 @@ def main():
                         
                         # Create timestamp for the output directory
                         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                        output_dir = results_dir / f"{parcel_filter.state}_{parcel_filter.county}_{selected_provider if selected_provider else 'all_providers'}_{timestamp}"
+                        # Sanitize provider name for file system
+                        if selected_provider:
+                            # Convert to lowercase and replace spaces with underscores
+                            provider_name = selected_provider.lower().replace(' ', '_')
+                            # Remove or replace invalid file system characters
+                            import re
+                            provider_name = re.sub(r'[^a-z0-9_]', '', provider_name)
+                            # Ensure it doesn't start with a number
+                            if provider_name and provider_name[0].isdigit():
+                                provider_name = 'provider_' + provider_name
+                            # Ensure it's not empty
+                            if not provider_name:
+                                provider_name = 'unknown_provider'
+                        else:
+                            provider_name = 'all_providers'
+                        output_dir = results_dir / f"{parcel_filter.state}_{parcel_filter.county}_{provider_name}_{timestamp}"
                         output_dir.mkdir(exist_ok=True)
                         
                         # Load ranked parcels directly from the database

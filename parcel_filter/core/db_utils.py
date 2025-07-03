@@ -1,5 +1,6 @@
 import logging
 import geopandas as gpd
+import re
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 from geoalchemy2 import Geometry
@@ -7,6 +8,36 @@ from datetime import datetime
 from typing import Optional, Dict
 
 logger = logging.getLogger(__name__)
+
+def sanitize_utility_name(utility_name: str) -> str:
+    """
+    Sanitize utility provider name for use in PostgreSQL table names.
+    
+    Args:
+        utility_name: The original utility provider name
+        
+    Returns:
+        Sanitized name safe for PostgreSQL identifiers
+    """
+    if not utility_name:
+        return 'all_providers'
+    
+    # Convert to lowercase and replace spaces with underscores
+    sanitized = utility_name.lower().replace(' ', '_')
+    
+    # Remove or replace invalid PostgreSQL identifier characters
+    # Keep only letters, numbers, and underscores
+    sanitized = re.sub(r'[^a-z0-9_]', '', sanitized)
+    
+    # Ensure it doesn't start with a number
+    if sanitized and sanitized[0].isdigit():
+        sanitized = 'provider_' + sanitized
+    
+    # Ensure it's not empty
+    if not sanitized:
+        sanitized = 'unknown_provider'
+    
+    return sanitized
 
 class DatabaseUtils:
     def __init__(self, state: str, county: Optional[str] = None, 
@@ -71,7 +102,21 @@ class DatabaseUtils:
             # Generate table name if not provided
             if table_name is None:
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                table_name = f"results.{self.state}_{self.county}_{utility_filter}_{timestamp}"
+                # Sanitize utility filter name for PostgreSQL table name
+                if utility_filter:
+                    # Convert to lowercase and replace spaces with underscores
+                    utility_name = utility_filter.lower().replace(' ', '_')
+                    # Remove or replace invalid PostgreSQL identifier characters
+                    utility_name = re.sub(r'[^a-z0-9_]', '', utility_name)
+                    # Ensure it doesn't start with a number
+                    if utility_name and utility_name[0].isdigit():
+                        utility_name = 'provider_' + utility_name
+                    # Ensure it's not empty
+                    if not utility_name:
+                        utility_name = 'unknown_provider'
+                else:
+                    utility_name = 'all_providers'
+                table_name = f"results.{self.state}_{self.county}_{utility_name}_{timestamp}"
             
             # Ensure the results schema exists
             with self.engine.connect() as conn:

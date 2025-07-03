@@ -1,3 +1,4 @@
+# Core database and geospatial dependencies
 psycopg2-binary>=2.9.9
 sqlalchemy>=2.0.0
 geoalchemy2>=0.14.0
@@ -5,9 +6,13 @@ geopandas>=0.13.0
 numpy<1.24.0
 pandas>=2.0.0
 shapely>=2.0.0
+
+# HTTP and data processing
 requests==2.31.0
 pyarrow==14.0.0  # Required for parquet file support
 fiona==1.9.4  
+
+# Visualization and mapping
 matplotlib>=3.7.0
 folium>=0.14.0
 branca>=0.6.0
@@ -16,3 +21,8 @@ branca>=0.6.0
 pytest>=7.4.0
 pytest-cov>=4.1.0
 pytest-mock>=3.11.1
+
+# Note: Updated utility provider name sanitization for PostgreSQL table names
+# - Handles special characters in utility provider names (commas, periods, etc.)
+# - Ensures valid PostgreSQL identifier names for table creation
+# - Maintains original names for database queries and user interface
