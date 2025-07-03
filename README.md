@@ -1,6 +1,4 @@
-# IDTool - Intelligent Development Tool
-
-A comprehensive parcel filtering and ranking system for land development analysis. This tool helps identify optimal parcels for development by filtering based on various criteria and ranking them using sophisticated algorithms.
+# IDTool - 
 
 ## 🚀 Features
 
