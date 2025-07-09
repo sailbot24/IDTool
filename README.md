@@ -11,6 +11,11 @@
 - **Utility Provider Support**: Filter and analyze parcels by specific utility providers
 - **Drive Time Analysis**: Calculate drive times using isochrone data
 - **Version Management**: Built-in update system and environment management
+- **Interactive Selection**: Choose state, county, and power provider interactively
+- **Parcel Filtering**: Filter parcels by various criteria
+- **Parcel Ranking**: Rank parcels based on multiple factors
+- **Database Rebuild**: Rebuild database from raw parcel files with standardized schema
+- **Schema Compliance Reporting**: Detailed reports on how well your data matches the Regrid parcel schema
 
 ## 📋 Prerequisites
 
@@ -75,9 +80,65 @@ CREATE EXTENSION postgis_topology;
 
 ### Required Schemas and Tables
 The tool expects the following structure:
-- `parcels.{state}_{county}` - Parcel data with geometry
+- `parcels.{state}_{county}` - Parcel data with geometry (created by rebuild script)
 - `other_gis.iso_50` - Isochrone data for drive time analysis
 - `other_gis.us_civil_airports` - Airport data for filtering
+
+### Database Rebuild Process
+
+The database rebuild script loads raw parcel data from the `raw/parcels/` directory and standardizes the schema based on the Regrid parcel schema. This ensures all county tables have the same columns and enables seamless state-level analysis.
+
+#### Directory Structure
+```
+raw/parcels/
+├── co/
+│   ├── adams/
+│   │   ├── adams_parcels.shp
+│   │   └── adams_parcels.csv
+│   └── weld/
+│       ├── weld_parcels.shp
+│       └── weld_parcels.csv
+└── az/
+    ├── maricopa/
+    │   └── maricopa_parcels.shp
+    └── pima/
+        └── pima_parcels.shp
+```
+
+#### Rebuild Commands
+```bash
+# Rebuild database for a specific state
+python rebuild_database.py --state co
+
+# Rebuild database for all states
+python rebuild_database.py --all-states
+
+# Use custom data directory
+python rebuild_database.py --state co --data-dir /path/to/parcels
+```
+
+#### What the Rebuild Script Does
+1. **Finds Parcel Files**: Scans the `raw/parcels/` directory for shapefiles, GeoJSON, GeoPackage, and CSV files
+2. **Standardizes Schema**: Maps column names to the Regrid parcel schema and adds missing columns with NULL values
+3. **Creates Tables**: Creates PostgreSQL tables with standardized schema for each county
+4. **Loads Data**: Loads all parcel data into the database with proper geometry handling
+5. **Creates Indexes**: Adds spatial indexes for efficient querying
+
+#### Supported File Formats
+- Shapefiles (.shp)
+- GeoJSON (.geojson)
+- GeoPackage (.gpkg)
+- CSV files (.csv)
+
+#### Column Standardization
+The script automatically maps common column name variations to the standard Regrid schema:
+- `parcel_number`, `parcelid` → `parcelnumb`
+- `land_use`, `use_description` → `usedesc`
+- `acres`, `acreage` → `gisacre`
+- `geometry`, `shape` → `geom`
+- And many more...
+
+**Note:** Run the rebuild script whenever you add new parcel data or need to recreate the database from scratch.
 
 ## 📖 Usage
 

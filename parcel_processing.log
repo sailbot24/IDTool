@@ -1,498 +1,475 @@
-2025-07-03 18:22:17,576 - root - INFO - Virtual environment already exists. Skipping setup.
-2025-07-03 18:22:17,576 - __main__ - INFO - Using database configuration from db_config.txt
-2025-07-03 18:22:17,577 - parcel_filter.core.db_utils - INFO - Connected to PostgreSQL database
-2025-07-03 18:22:25,168 - parcel_filter.core.filter - INFO - Found 10 unique power operators
-2025-07-03 18:22:25,169 - parcel_filter.core.filter - INFO - Available operators in data: ['~unknown~', 'Arizona Public Service Company', 'California Independent System Operator', 'City of Mesa - (AZ)', 'Intermountain Power Service Corporation', 'Salt River Project', 'San Diego Gas & Electric', 'Southern California Edison', 'Tucson Electric Power Co.', 'Western Area Power Administration']
-2025-07-03 18:22:30,173 - __main__ - INFO - Selected power provider: Western Area Power Administration
-2025-07-03 18:22:30,174 - __main__ - INFO - Step 1: Loading parcels...
-2025-07-03 18:22:30,413 - parcel_filter.core.filter - INFO - Unwanted activities columns: ['Land Use', 'Unwanted']
-2025-07-03 18:22:30,414 - parcel_filter.core.filter - INFO - Unique values in 'Unwanted' column: [ True False]
-2025-07-03 18:22:30,415 - parcel_filter.core.filter - INFO - Loaded 15 unwanted activities from Google Sheets
-2025-07-03 18:22:33,075 - parcel_filter.core.filter - INFO - Parcel count in parcels_filtered_initial: 4533
-2025-07-03 18:22:33,293 - parcel_filter.core.filter - INFO - Parcel count after initial filtering: 4533
-2025-07-03 18:22:33,293 - parcel_filter.core.filter - INFO - Loaded 4533 parcels after initial filtering
-2025-07-03 18:22:33,293 - __main__ - INFO - Step 2: Applying filters...
-2025-07-03 18:22:33,293 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
-2025-07-03 18:22:33,439 - parcel_filter.core.filter - INFO - Created temporary parcels_filtered_airports_1751584953 with 4488 rows
-2025-07-03 18:22:33,439 - parcel_filter.core.filter - INFO - Parcel count after airport filtering: 4488
-2025-07-03 18:22:33,439 - parcel_filter.core.filter - INFO - After airport filtering: 4488 parcels
-2025-07-03 18:22:33,439 - parcel_filter.core.filter - INFO - Filtering parcels based on transmission line distance...
-2025-07-03 18:22:33,519 - parcel_filter.core.filter - INFO - Created temporary parcels_filtered_transmission_1751584953 with 2671 rows
-2025-07-03 18:22:33,519 - parcel_filter.core.filter - INFO - Parcel count after transmission line filtering: 2671
-2025-07-03 18:22:33,520 - parcel_filter.core.filter - INFO - Filtering parcels by power provider: Western Area Power Administration
-2025-07-03 18:22:33,530 - parcel_filter.core.filter - INFO - Created temporary filtered_parcels_1751584953 with 86 rows
-2025-07-03 18:22:33,530 - parcel_filter.core.filter - INFO - Parcel count after power operator filtering: 86
-2025-07-03 18:22:33,532 - __main__ - INFO - Step 3: Calculating drive times...
-2025-07-03 18:22:33,532 - parcel_filter.core.filter - INFO - Loading isochrone data from database
-2025-07-03 18:22:34,358 - parcel_filter.core.filter - INFO - Loaded 3 isochrone polygons
-2025-07-03 18:22:34,358 - parcel_filter.core.filter - INFO - Calculating drive times...
-2025-07-03 18:22:35,456 - parcel_filter.core.filter - INFO - Drive time calculation completed
-2025-07-03 18:22:35,460 - __main__ - INFO - Step 4: Ranking parcels...
-2025-07-03 18:22:35,794 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
-2025-07-03 18:22:35,794 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.15, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
-2025-07-03 18:22:35,842 - parcel_filter.core.filter - INFO - Created permanent table results.az_maricopa_western_area_power_administration_20250703_182235 with 86 rows
-2025-07-03 18:22:35,852 - parcel_filter.core.filter - INFO - Table structure:
-2025-07-03 18:22:35,852 - parcel_filter.core.filter - INFO - Column: ogc_fid, Type: integer
-2025-07-03 18:22:35,852 - parcel_filter.core.filter - INFO - Column: geoid, Type: character varying
-2025-07-03 18:22:35,852 - parcel_filter.core.filter - INFO - Column: parcelnumb, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: parcelnumb_no_formatting, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: state_parcelnumb, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: account_number, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: tax_id, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: alt_parcelnumb1, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: alt_parcelnumb2, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: alt_parcelnumb3, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: usecode, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: usedesc, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: zoning, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: zoning_description, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: zoning_type, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: zoning_subtype, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: zoning_code_link, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: zoning_id, Type: integer
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: struct, Type: boolean
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: structno, Type: integer
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: yearbuilt, Type: integer
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: numstories, Type: double precision
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: numunits, Type: integer
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: numrooms, Type: double precision
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: structstyle, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: parvaltype, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: improvval, Type: double precision
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: landval, Type: double precision
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: parval, Type: double precision
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: agval, Type: double precision
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: homestead_exemption, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: saleprice, Type: double precision
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: saledate, Type: date
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: taxamt, Type: double precision
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: taxyear, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: owntype, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: owner, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: unmodified_owner, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: ownfrst, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: ownlast, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: owner2, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: owner3, Type: character varying
-2025-07-03 18:22:35,853 - parcel_filter.core.filter - INFO - Column: owner4, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: previous_owner, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: mailadd, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: mail_address2, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: careof, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: mail_addno, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: mail_addpref, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: mail_addstr, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: mail_addsttyp, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: mail_addstsuf, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: mail_unit, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: mail_city, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: mail_state2, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: mail_zip, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: mail_country, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: mail_urbanization, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: original_mailing_address, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: address, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: address2, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: saddno, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: saddpref, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: saddstr, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: saddsttyp, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: saddstsuf, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: sunit, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: scity, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: original_address, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: city, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: county, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: state2, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: szip, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: szip5, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: urbanization, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: ll_address_count, Type: integer
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: location_name, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: address_source, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: legaldesc, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: plat, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: book, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: page, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: block, Type: character varying
-2025-07-03 18:22:35,854 - parcel_filter.core.filter - INFO - Column: lot, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: neighborhood, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: neighborhood_code, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: subdivision, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: lat, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: lon, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: fema_flood_zone, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: fema_flood_zone_subtype, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: fema_flood_zone_raw, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: fema_flood_zone_data_date, Type: date
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: fema_nri_risk_rating, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: qoz, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: qoz_tract, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: census_tract, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: census_block, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: census_blockgroup, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: census_zcta, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: census_elementary_school_district, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: census_secondary_school_district, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: census_unified_school_district, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: ll_last_refresh, Type: date
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: sourceurl, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: recrdareatx, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: recrdareano, Type: integer
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: deeded_acres, Type: double precision
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: gisacre, Type: double precision
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: sqft, Type: double precision
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: ll_gisacre, Type: double precision
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: ll_gissqft, Type: bigint
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: ll_bldg_footprint_sqft, Type: integer
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: ll_bldg_count, Type: integer
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: cdl_raw, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: cdl_majority_category, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: cdl_majority_percent, Type: double precision
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: cdl_date, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: plss_township, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: plss_section, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: plss_range, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: reviseddate, Type: date
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: path, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: ll_stable_id, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: ll_uuid, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: ll_stack_uuid, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: ll_row_parcel, Type: character varying
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: ll_updated_at, Type: timestamp with time zone
-2025-07-03 18:22:35,855 - parcel_filter.core.filter - INFO - Column: precisely_id, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: placekey, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: dpv_status, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: dpv_codes, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: dpv_notes, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: dpv_type, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: cass_errorno, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: rdi, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: usps_vacancy, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: usps_vacancy_date, Type: date
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: padus_public_access, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: lbcs_activity, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: lbcs_activity_desc, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: lbcs_function, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: lbcs_function_desc, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: lbcs_structure, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: lbcs_structure_desc, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: lbcs_site, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: lbcs_site_desc, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: lbcs_ownership, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: lbcs_ownership_desc, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: housing_affordability_index, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: population_density, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: population_growth_past_5_years, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: population_growth_next_5_years, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: housing_growth_past_5_years, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: housing_growth_next_5_years, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: household_income_growth_next_5_years, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: median_household_income, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: transmission_line_distance, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: roughness_rating, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: highest_parcel_elevation, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: lowest_parcel_elevation, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: map, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: mcrnumber, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: mcrweblink, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: deednumber, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: deeddate, Type: date
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: rental, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: elementaryschooldistrict, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: highschooldistrict, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: apndash, Type: character varying
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: limitedpropertyvalue, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: assessmentratio_pct, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: assessedfullcashvalue, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: assessedlimitedpropertyvalue, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: assessedlandfullcashvalue, Type: double precision
-2025-07-03 18:22:35,856 - parcel_filter.core.filter - INFO - Column: assessedimprovementfullcashvalue, Type: double precision
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: landlegalclasscode, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: landlegalclassdescription, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: improvementlegalclasscode, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: improvementlegalclassdescription, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: taxingdistrictcode, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: taxingdistrictdescription, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: floorlevel, Type: integer
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: exteriorwalltype, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: rooftype, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: bathfixtures, Type: double precision
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: airconditioningtype, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: heat, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: coveredparkingspots, Type: integer
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: patios, Type: integer
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: pool, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: item_number, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: exemptstatus, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: exemptdescription, Type: character varying
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: geom, Type: USER-DEFINED
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: est_name, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: est_sub_oper, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: est_operator, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: est_owner, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: et_name, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: et_sub_oper, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: et_operator, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: et_owner, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: et_kv, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: et_distance, Type: double precision
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: drive_time, Type: double precision
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: fb_name, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: fb_sub_oper, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: fb_operator, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: fb_owner, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: fb_type, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: fb_status, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: fb_service_type, Type: text
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: fb_distance, Type: double precision
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: gisacre_norm, Type: double precision
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: trans_line_distance_norm, Type: double precision
-2025-07-03 18:22:35,857 - parcel_filter.core.filter - INFO - Column: norm_dt, Type: double precision
-2025-07-03 18:22:35,858 - parcel_filter.core.filter - INFO - Column: building_cover_prec, Type: bigint
-2025-07-03 18:22:35,858 - parcel_filter.core.filter - INFO - Column: building_cover_prec_invert, Type: bigint
-2025-07-03 18:22:35,858 - parcel_filter.core.filter - INFO - Column: zoning_ranking, Type: numeric
-2025-07-03 18:22:35,858 - parcel_filter.core.filter - INFO - Column: zoning_subtype_ranking, Type: numeric
-2025-07-03 18:22:35,858 - parcel_filter.core.filter - INFO - Column: activity_ranking, Type: integer
-2025-07-03 18:22:35,858 - parcel_filter.core.filter - INFO - Column: site_ranking, Type: numeric
-2025-07-03 18:22:35,858 - parcel_filter.core.filter - INFO - Column: ownership_ranking, Type: numeric
-2025-07-03 18:22:35,858 - parcel_filter.core.filter - INFO - Column: fema_nri_ranking, Type: numeric
-2025-07-03 18:22:35,858 - parcel_filter.core.filter - INFO - Column: flood_zone_ranking, Type: numeric
-2025-07-03 18:22:35,858 - parcel_filter.core.filter - INFO - Column: flood_subtype_ranking, Type: numeric
-2025-07-03 18:22:35,858 - parcel_filter.core.filter - INFO - Column: parcel_rank, Type: double precision
-2025-07-03 18:22:35,858 - parcel_filter.core.filter - INFO - Column: parcel_rank_normalized, Type: double precision
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - Sample row columns:
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - ogc_fid: 320834
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - geoid: 04013
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - parcelnumb: 50385033D
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - parcelnumb_no_formatting: 50385033D
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - state_parcelnumb: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - account_number: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - tax_id: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - alt_parcelnumb1: 503-85-033D
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - alt_parcelnumb2: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - alt_parcelnumb3: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - usecode: 4710
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - usedesc: RANCH PROPERTY
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - zoning: PC
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - zoning_description: Planned Community
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - zoning_type: Planned
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - zoning_subtype: Planned
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - zoning_code_link: https://www.zoneomics.com/code/buckeye-AZ
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - zoning_id: 14237790
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - struct: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - structno: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - yearbuilt: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - numstories: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - numunits: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - numrooms: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - structstyle: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - parvaltype: FULL MARKET
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - improvval: 0.0
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - landval: 99941.0
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - parval: 99941.0
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - agval: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - homestead_exemption: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - saleprice: 50000000.0
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - saledate: 2022-06-01
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - taxamt: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - taxyear: 2025
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - owntype: None
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - owner: DOUGLAS RANCH LAND COMPANY LLC
-2025-07-03 18:22:35,860 - parcel_filter.core.filter - INFO - unmodified_owner: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - ownfrst: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - ownlast: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - owner2: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - owner3: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - owner4: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - previous_owner: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - mailadd: 4150 N DRINKWATER BLVD
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - mail_address2: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - careof: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - mail_addno: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - mail_addpref: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - mail_addstr: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - mail_addsttyp: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - mail_addstsuf: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - mail_unit: APT 100
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - mail_city: SCOTTSDALE
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - mail_state2: AZ
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - mail_zip: 85251
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - mail_country: USA
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - mail_urbanization: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - original_mailing_address: {"mailadd":"4150 N DRINKWATER BLVD APT 100","mail_city":"SCOTTSDALE","mail_state2":"AZ","mail_zip":"85251","mail_country":"USA"}
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - address: 5124 N 19TH AVE
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - address2: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - saddno: 5124
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - saddpref: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - saddstr: N 19TH
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - saddsttyp: AVE
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - saddstsuf: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - sunit: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - scity: WICKENBURG
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - original_address: {"saddstsuf":"","scity":"BUCKEYE","szip":"85390"}
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - city: wickenburg
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - county: maricopa
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - state2: AZ
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - szip: 85390
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - szip5: 85390
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - urbanization: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - ll_address_count: 0
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - location_name: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - address_source: openaddresses
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - legaldesc: LOTS 1 2 3 4 & E2 OF W2 & E2 OF SEC 19 & ALSO ALL OF SEC 29 & ALSO LOTS 1 2 3 4 & E2 OF W2 & E2 SEC 30 & ALSO SEC 32
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - plat: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - book: 503
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - page: None
-2025-07-03 18:22:35,861 - parcel_filter.core.filter - INFO - block: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - lot: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - neighborhood: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - neighborhood_code: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - subdivision: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - lat: 33.660451
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - lon: -112.798791
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - fema_flood_zone: AE
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - fema_flood_zone_subtype: FLOODWAY
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - fema_flood_zone_raw: [{"zone":"X","subtype":"0.2 PCT ANNUAL CHANCE FLOOD HAZARD","percent":89},{"zone":"AE","subtype":null,"percent":3},{"zone":"AE","subtype":"FLOODWAY","percent":4}]
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - fema_flood_zone_data_date: 2023-10-17
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - fema_nri_risk_rating: Relatively Low
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - qoz: No
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - qoz_tract: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - census_tract: 04013040516
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - census_block: 040130405165069
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - census_blockgroup: 040130405165
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - census_zcta: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - census_elementary_school_district: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - census_secondary_school_district: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - census_unified_school_district: Wickenburg Unified District
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - ll_last_refresh: 2025-02-04
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - sourceurl: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - recrdareatx: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - recrdareano: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - deeded_acres: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - gisacre: 2498.52808
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - sqft: 108835883.0
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - ll_gisacre: 2498.00493
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - ll_gissqft: 108815359
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - ll_bldg_footprint_sqft: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - ll_bldg_count: 0
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - cdl_raw: [[152, 65.9], [176, 33.7], [131, 0.4]]
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - cdl_majority_category: Shrubland
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - cdl_majority_percent: 65.9
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - cdl_date: 2023
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - plss_township: 004N
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - plss_section: Section 29
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - plss_range: 005W
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - reviseddate: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - path: /us/az/maricopa/wickenburg/320834
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - ll_stable_id: parcelnumb
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - ll_uuid: 74396af3-15ab-4211-9b0b-e9e29c781834
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - ll_stack_uuid: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - ll_row_parcel: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - ll_updated_at: 2025-03-04 13:19:49.785000-07:00
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - precisely_id: P00001WQG7PD
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - placekey: 222@5zb-tzh-zpv
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - dpv_status: N
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - dpv_codes: None
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - dpv_notes: A1
-2025-07-03 18:22:35,862 - parcel_filter.core.filter - INFO - dpv_type: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - cass_errorno: 3.1,14.1,A1
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - rdi: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - usps_vacancy: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - usps_vacancy_date: 2025-03-01
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - padus_public_access: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - lbcs_activity: 8200.0
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - lbcs_activity_desc: Livestock related
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - lbcs_function: 9310.0
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - lbcs_function_desc: Cattle ranch and crops
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - lbcs_structure: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - lbcs_structure_desc: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - lbcs_site: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - lbcs_site_desc: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - lbcs_ownership: 1500.0
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - lbcs_ownership_desc: Businesses and commercial entities
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - housing_affordability_index: 113.0
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - population_density: 3.5
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - population_growth_past_5_years: -4.28
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - population_growth_next_5_years: 2.45
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - housing_growth_past_5_years: 3.42
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - housing_growth_next_5_years: 2.62
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - household_income_growth_next_5_years: 3.32
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - median_household_income: 116840.0
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - transmission_line_distance: 0.0
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - roughness_rating: 0.0
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - highest_parcel_elevation: 471.91
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - lowest_parcel_elevation: 433.41
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - map: 85
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - mcrnumber: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - mcrweblink: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - deednumber: 20220509878
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - deeddate: 2022-06-17
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - rental: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - elementaryschooldistrict: WICKENBURG UNIFIED SCHOOL DISTRICT
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - highschooldistrict: WICKENBURG UNIFIED #9
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - apndash: 503-85-033D
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - limitedpropertyvalue: 99941.0
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - assessmentratio_pct: 100.0
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - assessedfullcashvalue: 99941.0
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - assessedlimitedpropertyvalue: 14991.0
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - assessedlandfullcashvalue: 99941.0
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - assessedimprovementfullcashvalue: 0.0
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - landlegalclasscode: 2.R
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - landlegalclassdescription: AG / VACANT LAND / NON-PROFIT R/P
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - improvementlegalclasscode: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - improvementlegalclassdescription: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - taxingdistrictcode: 090200
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - taxingdistrictdescription: WICKENBERG U.S.D. IN CITY OF BUCKEYE
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - floorlevel: 1
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - exteriorwalltype: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - rooftype: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - bathfixtures: None
-2025-07-03 18:22:35,863 - parcel_filter.core.filter - INFO - airconditioningtype: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - heat: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - coveredparkingspots: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - patios: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - pool: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - item_number: 033D
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - exemptstatus: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - exemptdescription: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - geom: 0103000020E61000000100000017000000357BA01598325CC0CAF962EFC5D140402441B8020A325CC0890AD5CDC5D1404048A46DFC09325CC0213B6F63B3D24040ADF6B0170A325CC08410902FA1D3404060E63BF809325CC02EAC1BEF8ED440409541B5C109325CC0F08975AA7CD540408862F20698325CC0C6C210397DD540404BFF925426335CC0191D90847DD54040ECF6596526335CC0F33CB83B6BD64040BC72BD6D26335CC0E49EAEEE58D7404056629E95B4335CC020B75F3E59D740404A41B79734345CC0029EB47059D740408B3045B934345CC0103CBEBD6BD64040A9BC1DE134345CC0780B24287ED54040A9BC1DE134345CC08BDEA9807BD54040793881E934345CC0E6B1666490D440404AB4E4F134345CC09B1E1494A2D34040F12900C633345CC09B1E1494A2D340409107228BB4335CC0D0798D5DA2D34040105A0F5F26335CC024EEB1F4A1D340406F62484E26335CC0D95A5F24B4D24040DA8B683B26335CC077853E58C6D14040357BA01598325CC0CAF962EFC5D14040
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - est_name: APS
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - est_sub_oper: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - est_operator: Arizona Public Service Company
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - est_owner: Pinnacle West Capital Corporation
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - et_name: WAPA
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - et_sub_oper: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - et_operator: Western Area Power Administration
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - et_owner: US Department of Energy
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - et_kv: 345
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - et_distance: 0.0
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - drive_time: 9999.0
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - fb_name: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - fb_sub_oper: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - fb_operator: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - fb_owner: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - fb_type: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - fb_status: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - fb_service_type: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - fb_distance: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - gisacre_norm: 5.702285358954305
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - trans_line_distance_norm: 10.0
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - norm_dt: 10.0
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - building_cover_prec: None
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - building_cover_prec_invert: 5
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - zoning_ranking: 0
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - zoning_subtype_ranking: 0
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - activity_ranking: 0
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - site_ranking: 0
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - ownership_ranking: 0
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - fema_nri_ranking: 0
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - flood_zone_ranking: 0
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - flood_subtype_ranking: 0
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - parcel_rank: 2.1070228535895428
-2025-07-03 18:22:35,864 - parcel_filter.core.filter - INFO - parcel_rank_normalized: 10.0
-2025-07-03 18:22:35,887 - __main__ - INFO - Step 5: Saving results...
-2025-07-03 18:22:35,887 - parcel_filter.core.filter - INFO - Results already saved to permanent table: results.az_maricopa_western_area_power_administration_20250703_182235
-2025-07-03 18:22:35,887 - __main__ - INFO - Step 6: Cleaning up temporary data...
-2025-07-03 18:22:35,888 - parcel_filter.core.filter - INFO - Cleaned up temporary table: filtered_parcels_1751584953
-2025-07-03 18:22:35,888 - __main__ - INFO - Pipeline completed successfully
+2025-07-09 15:00:26,341 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-07-09 15:00:26,341 - __main__ - INFO - Using database configuration from db_config.txt
+2025-07-09 15:00:26,342 - parcel_filter.core.db_utils - INFO - Connected to PostgreSQL database
+2025-07-09 15:00:26,393 - parcel_filter.core.filter - INFO - Found 3 available states: ['az', 'co', 'ks']
+2025-07-09 15:00:27,844 - __main__ - INFO - Selected state: ks
+2025-07-09 15:00:27,849 - parcel_filter.core.filter - INFO - Found 1 available counties for state ks: ['johnson']
+2025-07-09 15:00:29,250 - __main__ - INFO - Selected county: johnson
+2025-07-09 15:00:29,250 - parcel_filter.core.db_utils - INFO - Connected to PostgreSQL database
+2025-07-09 15:00:29,416 - parcel_filter.core.filter - INFO - Found 4 unique power operators
+2025-07-09 15:00:29,416 - parcel_filter.core.filter - INFO - Available operators in data: ['~unknown~', 'Evergy Kansas Central, Inc.', 'Evergy Kansas Metro, Inc.', 'Evergy, Inc.']
+2025-07-09 15:00:31,600 - __main__ - INFO - Selected power provider: None
+2025-07-09 15:00:31,600 - __main__ - INFO - Step 1: Loading parcels...
+2025-07-09 15:00:32,196 - parcel_filter.core.filter - INFO - Unwanted activities columns: ['Land Use', 'Unwanted']
+2025-07-09 15:00:32,196 - parcel_filter.core.filter - INFO - Unique values in 'Unwanted' column: [ True False]
+2025-07-09 15:00:32,197 - parcel_filter.core.filter - INFO - Loaded 15 unwanted activities from Google Sheets
+2025-07-09 15:00:32,298 - parcel_filter.core.filter - INFO - Parcel count in parcels_filtered_initial: 972
+2025-07-09 15:00:32,366 - parcel_filter.core.filter - INFO - Parcel count after initial filtering: 972
+2025-07-09 15:00:32,366 - parcel_filter.core.filter - INFO - Loaded 972 parcels after initial filtering
+2025-07-09 15:00:32,366 - __main__ - INFO - Step 2: Applying filters...
+2025-07-09 15:00:32,366 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
+2025-07-09 15:00:32,396 - parcel_filter.core.filter - INFO - Created temporary parcels_filtered_airports_1752091232 with 962 rows
+2025-07-09 15:00:32,396 - parcel_filter.core.filter - INFO - Parcel count after airport filtering: 962
+2025-07-09 15:00:32,396 - parcel_filter.core.filter - INFO - After airport filtering: 962 parcels
+2025-07-09 15:00:32,396 - parcel_filter.core.filter - INFO - Filtering parcels based on transmission line distance...
+2025-07-09 15:00:32,408 - parcel_filter.core.filter - INFO - Created temporary parcels_filtered_transmission_1752091232 with 799 rows
+2025-07-09 15:00:32,408 - parcel_filter.core.filter - INFO - Parcel count after transmission line filtering: 799
+2025-07-09 15:00:32,409 - __main__ - INFO - Step 3: Calculating drive times...
+2025-07-09 15:00:32,409 - parcel_filter.core.filter - INFO - Loading isochrone data from database
+2025-07-09 15:00:32,409 - parcel_filter.core.filter - WARNING - Could not load isochrone data: (psycopg2.errors.UndefinedColumn) column "wkb_geometry" does not exist
+LINE 4:                     ST_Transform(wkb_geometry, 4326) as geom
+                                         ^
+
+[SQL: 
+                SELECT 
+                    time,
+                    ST_Transform(wkb_geometry, 4326) as geom
+                FROM other_gis.iso_50
+            ]
+(Background on this error at: https://sqlalche.me/e/20/f405). Using default drive time value.
+2025-07-09 15:00:32,410 - parcel_filter.core.filter - INFO - Drive time calculation completed
+2025-07-09 15:00:32,410 - __main__ - INFO - Step 4: Ranking parcels...
+2025-07-09 15:00:32,940 - parcel_filter.core.ranking - INFO - Successfully loaded ranking data with columns: ['zoning_type', 'Zoning Ranking', 'zoning_subtype', 'Zoning Subtype Ranking', 'lbcs_activity_desc', 'Land Activity Ranking', 'lbcs_site_desc', 'Site Descirption Ranking', 'lbcs_ownership_desc', 'Ownership Ranking', 'fema_nri_risk_ranking', 'Fema NRI Flood Risk Ranking', 'fema_flood_zone', 'Fema Flood Zone Ranking', 'fema_flood_zone_subtype', 'Fema Flood Zone Subtype Ranking']
+2025-07-09 15:00:32,940 - parcel_filter.core.ranking - INFO - Loaded weights: {'zoning': 0.2, 'zoning_subtype': 0.15, 'activity': 0.1, 'site': 0.1, 'ownership': 0.1, 'fema_nri': 0.15, 'flood_zone': 0.1, 'flood_subtype': 0.1}
+2025-07-09 15:00:33,049 - parcel_filter.core.filter - INFO - Created permanent table results.ks_johnson_all_providers_20250709_150033 with 799 rows
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Table structure:
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: ogc_fid, Type: integer
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: geoid, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: parcelnumb, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: parcelnumb_no_formatting, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: state_parcelnumb, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: account_number, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: tax_id, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: alt_parcelnumb1, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: alt_parcelnumb2, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: alt_parcelnumb3, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: usecode, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: usedesc, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: zoning, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: zoning_description, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: zoning_type, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: zoning_subtype, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: zoning_code_link, Type: character varying
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: zoning_id, Type: integer
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: struct, Type: boolean
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: structno, Type: integer
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: yearbuilt, Type: integer
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: numstories, Type: double precision
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: numunits, Type: integer
+2025-07-09 15:00:33,052 - parcel_filter.core.filter - INFO - Column: numrooms, Type: double precision
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: structstyle, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: parvaltype, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: improvval, Type: double precision
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: landval, Type: double precision
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: parval, Type: double precision
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: agval, Type: double precision
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: homestead_exemption, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: saleprice, Type: double precision
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: saledate, Type: date
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: taxamt, Type: double precision
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: taxyear, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: owntype, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: owner, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: unmodified_owner, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: ownfrst, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: ownlast, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: owner2, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: owner3, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: owner4, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: previous_owner, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: mailadd, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: mail_address2, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: careof, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: mail_addno, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: mail_addpref, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: mail_addstr, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: mail_addsttyp, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: mail_addstsuf, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: mail_unit, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: mail_city, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: mail_state2, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: mail_zip, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: mail_country, Type: character varying
+2025-07-09 15:00:33,053 - parcel_filter.core.filter - INFO - Column: mail_urbanization, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: original_mailing_address, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: address, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: address2, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: saddno, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: saddpref, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: saddstr, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: saddsttyp, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: saddstsuf, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: sunit, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: scity, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: original_address, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: city, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: county, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: state2, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: szip, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: szip5, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: urbanization, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: ll_address_count, Type: integer
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: location_name, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: address_source, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: legaldesc, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: plat, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: book, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: page, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: block, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: lot, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: neighborhood, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: neighborhood_code, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: subdivision, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: lat, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: lon, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: fema_flood_zone, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: fema_flood_zone_subtype, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: fema_flood_zone_raw, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: fema_flood_zone_data_date, Type: date
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: fema_nri_risk_rating, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: qoz, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: qoz_tract, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: census_tract, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: census_block, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: census_blockgroup, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: census_zcta, Type: character varying
+2025-07-09 15:00:33,054 - parcel_filter.core.filter - INFO - Column: census_elementary_school_district, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: census_secondary_school_district, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: census_unified_school_district, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: ll_last_refresh, Type: date
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: sourceurl, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: recrdareatx, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: recrdareano, Type: integer
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: deeded_acres, Type: double precision
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: gisacre, Type: double precision
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: sqft, Type: double precision
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: ll_gisacre, Type: double precision
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: ll_gissqft, Type: bigint
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: ll_bldg_footprint_sqft, Type: integer
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: ll_bldg_count, Type: integer
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: cdl_raw, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: cdl_majority_category, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: cdl_majority_percent, Type: double precision
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: cdl_date, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: plss_township, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: plss_section, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: plss_range, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: reviseddate, Type: date
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: path, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: ll_stable_id, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: ll_uuid, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: ll_stack_uuid, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: ll_row_parcel, Type: character varying
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: ll_updated_at, Type: timestamp with time zone
+2025-07-09 15:00:33,055 - parcel_filter.core.filter - INFO - Column: precisely_id, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: placekey, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: dpv_status, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: dpv_codes, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: dpv_notes, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: dpv_type, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: cass_errorno, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: rdi, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: usps_vacancy, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: usps_vacancy_date, Type: date
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: padus_public_access, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: lbcs_activity, Type: double precision
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: lbcs_activity_desc, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: lbcs_function, Type: double precision
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: lbcs_function_desc, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: lbcs_structure, Type: double precision
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: lbcs_structure_desc, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: lbcs_site, Type: double precision
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: lbcs_site_desc, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: lbcs_ownership, Type: double precision
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: lbcs_ownership_desc, Type: character varying
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: housing_affordability_index, Type: double precision
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: population_density, Type: double precision
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: population_growth_past_5_years, Type: double precision
+2025-07-09 15:00:33,056 - parcel_filter.core.filter - INFO - Column: population_growth_next_5_years, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: housing_growth_past_5_years, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: housing_growth_next_5_years, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: household_income_growth_next_5_years, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: median_household_income, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: transmission_line_distance, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: roughness_rating, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: highest_parcel_elevation, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: lowest_parcel_elevation, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: geopropid, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: geokupn, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: aimsfid, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: taxpropid, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: taxkupn, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: lbcsfunctn, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: prpolytype, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: baline1, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: baline2, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: gradedesc, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: cdudesc, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: conddesc, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: spx, Type: integer
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: spy, Type: integer
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: quickrefid, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: condition_, Type: character varying
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: geom, Type: USER-DEFINED
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: drive_time, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: fb_name, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: fb_sub_oper, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: fb_operator, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: fb_owner, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: fb_type, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: fb_status, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: fb_service_type, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: fb_distance, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: est_name, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: est_sub_oper, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: est_operator, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: est_owner, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: et_name, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: et_sub_oper, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: et_operator, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: et_owner, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: et_kv, Type: text
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: et_distance, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: gisacre_norm, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: trans_line_distance_norm, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: norm_dt, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: building_cover_prec, Type: bigint
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: building_cover_prec_invert, Type: bigint
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: zoning_ranking, Type: numeric
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: zoning_subtype_ranking, Type: numeric
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: activity_ranking, Type: integer
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: site_ranking, Type: numeric
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: ownership_ranking, Type: numeric
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: fema_nri_ranking, Type: numeric
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: flood_zone_ranking, Type: numeric
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: flood_subtype_ranking, Type: numeric
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: parcel_rank, Type: double precision
+2025-07-09 15:00:33,057 - parcel_filter.core.filter - INFO - Column: parcel_rank_normalized, Type: double precision
+2025-07-09 15:00:33,058 - parcel_filter.core.filter - INFO - Sample row columns:
+2025-07-09 15:00:33,058 - parcel_filter.core.filter - INFO - ogc_fid: 265253
+2025-07-09 15:00:33,058 - parcel_filter.core.filter - INFO - geoid: 20091
+2025-07-09 15:00:33,058 - parcel_filter.core.filter - INFO - parcelnumb: 9F241517-1002
+2025-07-09 15:00:33,058 - parcel_filter.core.filter - INFO - parcelnumb_no_formatting: 9F2415171002
+2025-07-09 15:00:33,058 - parcel_filter.core.filter - INFO - state_parcelnumb: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - account_number: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - tax_id: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - alt_parcelnumb1: 9F241517-1002
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - alt_parcelnumb2: R179982
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - alt_parcelnumb3: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - usecode: 106
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - usedesc: AgVacant
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - zoning: RUR
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - zoning_description: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - zoning_type: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - zoning_subtype: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - zoning_code_link: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - zoning_id: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - struct: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - structno: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - yearbuilt: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - numstories: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - numunits: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - numrooms: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - structstyle: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - parvaltype: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - improvval: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - landval: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - parval: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - agval: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - homestead_exemption: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - saleprice: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - saledate: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - taxamt: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - taxyear: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - owntype: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - owner: GLENA MAE EWING REVOCABLE TRUST
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - unmodified_owner: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - ownfrst: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - ownlast: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - owner2: THOMAS M EWING REVOCABLE TRUST
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - owner3: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - owner4: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - previous_owner: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - mailadd: 4071 W 255TH ST
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - mail_address2: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - careof: None
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - mail_addno: 4071
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - mail_addpref: W
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - mail_addstr: 255TH
+2025-07-09 15:00:33,059 - parcel_filter.core.filter - INFO - mail_addsttyp: ST
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - mail_addstsuf: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - mail_unit: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - mail_city: LOUISBURG
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - mail_state2: KS
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - mail_zip: 66053-6294
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - mail_country: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - mail_urbanization: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - original_mailing_address: {"mailadd":"4071 W 255TH ST ","mail_city":"LOUISBURG","mail_state2":"KS","mail_zip":"66053"}
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - address: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - address2: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - saddno: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - saddpref: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - saddstr: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - saddsttyp: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - saddstsuf: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - sunit: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - scity: SPRING HILL
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - original_address: {"saddno":"0"}
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - city: spring-hill-twp
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - county: johnson
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - state2: KS
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - szip: 66083
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - szip5: 66083
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - urbanization: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - ll_address_count: 0
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - location_name: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - address_source: county
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - legaldesc: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - plat: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - book: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - page: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - block: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - lot: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - neighborhood: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - neighborhood_code: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - subdivision: None
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - lat: 38.749237
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - lon: -94.774315
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - fema_flood_zone: AE
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - fema_flood_zone_subtype: FLOODWAY
+2025-07-09 15:00:33,060 - parcel_filter.core.filter - INFO - fema_flood_zone_raw: [{"zone":"X","subtype":"AREA OF MINIMAL FLOOD HAZARD","percent":146},{"zone":"AE","subtype":null,"percent":16},{"zone":"X","subtype":"1 PCT FUTURE CONDITIONS","percent":5},{"zone":"AE","subtype":"FLOODWAY","percent":8}]
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - fema_flood_zone_data_date: 2023-10-17
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - fema_nri_risk_rating: Relatively Moderate
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - qoz: No
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - qoz_tract: None
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - census_tract: 20091053801
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - census_block: 200910538015027
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - census_blockgroup: 200910538015
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - census_zcta: 66083
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - census_elementary_school_district: None
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - census_secondary_school_district: None
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - census_unified_school_district: Spring Hill Unified School District 230
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - ll_last_refresh: 2025-05-28
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - sourceurl: None
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - recrdareatx: None
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - recrdareano: None
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - deeded_acres: None
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - gisacre: 122.3
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - sqft: 5327458.51821899
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - ll_gisacre: 122.27432
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - ll_gissqft: 5326380
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - ll_bldg_footprint_sqft: None
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - ll_bldg_count: 0
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - cdl_raw: [[176, 70.4], [5, 24.4], [1, 3.6], [141, 0.5], [122, 0.5], [111, 0.4], [121, 0.2]]
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - cdl_majority_category: Grassland/Pasture
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - cdl_majority_percent: 70.4
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - cdl_date: 2023
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - plss_township: 015S
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - plss_section: Section 17
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - plss_range: 024E
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - reviseddate: None
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - path: /us/ks/johnson/spring-hill-twp/265253
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - ll_stable_id: parcelnumb
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - ll_uuid: fd794dfd-3072-47f0-bf1b-cf7f77a23f18
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - ll_stack_uuid: None
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - ll_row_parcel: None
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - ll_updated_at: 2025-07-05 04:38:43.065000-06:00
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - precisely_id: None
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - placekey: None
+2025-07-09 15:00:33,061 - parcel_filter.core.filter - INFO - dpv_status: N
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - dpv_codes: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - dpv_notes: A1
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - dpv_type: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - cass_errorno: 3.1,14.1,A1
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - rdi: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - usps_vacancy: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - usps_vacancy_date: 2021-06-15
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - padus_public_access: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - lbcs_activity: 9500.0
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - lbcs_activity_desc: Vacant parcel
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - lbcs_function: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - lbcs_function_desc: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - lbcs_structure: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - lbcs_structure_desc: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - lbcs_site: 3000.0
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - lbcs_site_desc: Developed site with crops, grazing, forestry, etc.
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - lbcs_ownership: 1200.0
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - lbcs_ownership_desc: Private trusts
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - housing_affordability_index: 137.0
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - population_density: 257.5
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - population_growth_past_5_years: 0.72
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - population_growth_next_5_years: 0.53
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - housing_growth_past_5_years: 0.86
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - housing_growth_next_5_years: 0.67
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - household_income_growth_next_5_years: 1.12
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - median_household_income: 151282.0
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - transmission_line_distance: 1762.0
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - roughness_rating: 1.0
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - highest_parcel_elevation: 327.22
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - lowest_parcel_elevation: 305.09
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - geopropid: 9F241517-1002
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - geokupn: 0461841702001001000
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - aimsfid: 201632203033969
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - taxpropid: 9F241517-1002
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - taxkupn: 0461841702001001000
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - lbcsfunctn: 9010
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - prpolytype: 22
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - baline1: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - baline2: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - gradedesc: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - cdudesc: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - conddesc: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - spx: 2232155
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - spy: 167843
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - quickrefid: R179982
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - condition_: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - geom: 0106000020E6100000010000000103000000010000001000000083D8994267B157C0032670EB6E5F4340D1E80E6267B157C037894160E55F43401A33897A41B157C073BB97FBE45F43407364E59741B157C0C651B9895A60434016D86322A5B157C03691990B5C604340FF959526A5B157C0912A8A5759604340C6F7C5A5AAB157C019E0826C59604340EA5A7B9FAAB157C020B1DD3D406043404FE78A52C2B157C01403249A40604340BA10AB3FC2B157C0AE0D15E3FC5F434026378AACB5B157C0B4E4F1B4FC5F43403E7958A8B5B157C0307E1AF7E65F43401E4C8A8FCFB157C0F54BC45BE75F43405646239FD7B157C0363B527DE75F43401457957DD7B157C0F086342A705F434083D8994267B157C0032670EB6E5F4340
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - drive_time: 35.0
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - fb_name: Windstream
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - fb_sub_oper: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - fb_operator: Windstream Holdings, Inc.
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - fb_owner: Windstream Holdings, Inc.
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - fb_type: Longhaul Backbone
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - fb_status: Operational
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - fb_service_type: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - fb_distance: 4617.565084576298
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - est_name: Evergy
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - est_sub_oper: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - est_operator: Evergy Metro
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - est_owner: Evergy Metro
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - et_name: Evergy
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - et_sub_oper: None
+2025-07-09 15:00:33,062 - parcel_filter.core.filter - INFO - et_operator: Evergy Kansas Metro, Inc.
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - et_owner: Evergy, Inc.
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - et_kv: 0
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - et_distance: 0.0
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - gisacre_norm: 1.6863221316643702
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - trans_line_distance_norm: 10.0
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - norm_dt: 10.0
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - building_cover_prec: None
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - building_cover_prec_invert: 5
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - zoning_ranking: 0
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - zoning_subtype_ranking: 0
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - activity_ranking: 0
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - site_ranking: 0
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - ownership_ranking: 0
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - fema_nri_ranking: 3.0
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - flood_zone_ranking: 5.0
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - flood_subtype_ranking: 5.0
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - parcel_rank: 4.016863221316644
+2025-07-09 15:00:33,063 - parcel_filter.core.filter - INFO - parcel_rank_normalized: 10.0
+2025-07-09 15:00:33,116 - __main__ - INFO - Step 5: Saving results...
+2025-07-09 15:00:33,116 - parcel_filter.core.filter - INFO - Results already saved to permanent table: results.ks_johnson_all_providers_20250709_150033
+2025-07-09 15:00:33,116 - __main__ - INFO - Step 6: Cleaning up temporary data...
+2025-07-09 15:00:33,117 - parcel_filter.core.filter - INFO - Cleaned up temporary table: parcels_filtered_transmission_1752091232
+2025-07-09 15:00:33,117 - __main__ - INFO - PIPELINE COMPLETED SUCCESSFULLY

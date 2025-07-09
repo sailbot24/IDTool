@@ -50,7 +50,7 @@ class ParcelFilter:
         }
         self.db_utils = DatabaseUtils(state, county, db_config)
         self.ranking_url = ranking_url
-        self.ranker = ParcelRanker(ranking_url, self.state, self.county) if ranking_url else None
+        self.ranker = ParcelRanker(ranking_url, self.state, self.county or "") if ranking_url else None
         self.isochrone_data = None
         self.filtered_parcels = None
         self.unwanted_activities = None
@@ -141,17 +141,52 @@ class ParcelFilter:
             
             # Create initial filtered table
             with self.db_utils.engine.connect() as conn:
-                # Get the correct table name with schema
-                table_name = f"parcels.{self.state}_{self.county}"
-                
-                # Create the filtered table
-                conn.execute(text(f"""
+                if self.county:
+                    # Single county case
+                    table_name = f"parcels.{self.state}_{self.county}"
+                    sql = f"""
                     CREATE TEMP TABLE parcels_filtered_initial AS
                     SELECT p.*
                     FROM {table_name} p
                     WHERE p.gisacre > {min_size}
                     AND p.usedesc NOT IN :unwanted_activities
-                """), {"unwanted_activities": tuple(self.unwanted_activities)})
+                    """
+                    conn.execute(text(sql), {"unwanted_activities": tuple(self.unwanted_activities)})
+                else:
+                    # All counties case - using standardized schema from rebuild script
+                    # Get all counties for this state
+                    result = conn.execute(text(f"""
+                        SELECT table_name 
+                        FROM information_schema.tables 
+                        WHERE table_schema = 'parcels' 
+                        AND table_name LIKE '{self.state}_%'
+                        ORDER BY table_name
+                    """))
+                    
+                    counties = []
+                    for row in result.fetchall():
+                        table_name = row[0]
+                        if table_name.startswith(f"{self.state}_"):
+                            county = table_name[len(f"{self.state}_"):]
+                            counties.append(county)
+                    
+                    # Create UNION query for all counties (safe with standardized schema)
+                    union_queries = []
+                    for county in counties:
+                        table_name = f"parcels.{self.state}_{county}"
+                        union_queries.append(f"""
+                        SELECT p.*
+                        FROM {table_name} p
+                        WHERE p.gisacre > {min_size}
+                        AND p.usedesc NOT IN :unwanted_activities
+                        """)
+                    
+                    sql = f"""
+                    CREATE TEMP TABLE parcels_filtered_initial AS
+                    {' UNION ALL '.join(union_queries)}
+                    """
+                    conn.execute(text(sql), {"unwanted_activities": tuple(self.unwanted_activities)})
+                
                 conn.commit()
                 
                 # Verify the table was created
@@ -303,28 +338,117 @@ class ParcelFilter:
     def get_power_providers(self) -> List[str]:
         """Get list of unique power providers from the database."""
         try:
-            # Get the source table name
-            table_name = f"parcels.{self.state}_{self.county}" if self.county else None
-            if not table_name:
-                raise ValueError("County must be specified to get power operators")
-                
-            with self.db_utils.engine.connect() as conn:
-                result = conn.execute(text(f"""
-                    SELECT DISTINCT et_operator
-                    FROM {table_name}
-                    WHERE et_operator IS NOT NULL 
-                    AND et_operator != ''
-                    ORDER BY et_operator
-                """))
-                providers = [row[0].strip() for row in result.fetchall() if row[0]]
-                
-                # Log the providers we found
-                logger.info(f"Found {len(providers)} unique power operators")
-                logger.info(f"Available operators in data: {providers}")
-                
-                return sorted(providers)
+            if self.county:
+                # Single county case
+                table_name = f"parcels.{self.state}_{self.county}"
+                with self.db_utils.engine.connect() as conn:
+                    result = conn.execute(text(f"""
+                        SELECT DISTINCT et_operator
+                        FROM {table_name}
+                        WHERE et_operator IS NOT NULL 
+                        AND et_operator != ''
+                        ORDER BY et_operator
+                    """))
+                    providers = [row[0].strip() for row in result.fetchall() if row[0]]
+            else:
+                # All counties case
+                with self.db_utils.engine.connect() as conn:
+                    # Get all counties for this state
+                    result = conn.execute(text(f"""
+                        SELECT table_name 
+                        FROM information_schema.tables 
+                        WHERE table_schema = 'parcels' 
+                        AND table_name LIKE '{self.state}_%'
+                        ORDER BY table_name
+                    """))
+                    
+                    counties = []
+                    for row in result.fetchall():
+                        table_name = row[0]
+                        if table_name.startswith(f"{self.state}_"):
+                            county = table_name[len(f"{self.state}_"):]
+                            counties.append(county)
+                    
+                    # Query power providers from all counties
+                    providers = set()
+                    for county in counties:
+                        table_name = f"parcels.{self.state}_{county}"
+                        result = conn.execute(text(f"""
+                            SELECT DISTINCT et_operator
+                            FROM {table_name}
+                            WHERE et_operator IS NOT NULL 
+                            AND et_operator != ''
+                        """))
+                        county_providers = [row[0].strip() for row in result.fetchall() if row[0]]
+                        providers.update(county_providers)
+                    
+                    providers = list(providers)
+            
+            # Log the providers we found
+            logger.info(f"Found {len(providers)} unique power operators")
+            logger.info(f"Available operators in data: {providers}")
+            
+            return sorted(providers)
         except Exception as e:
             logger.error(f"Error getting power operators: {e}")
+            raise
+
+    def get_available_states(self) -> List[str]:
+        """Get list of available states from the database."""
+        try:
+            with self.db_utils.engine.connect() as conn:
+                # Query to get all table names in the parcels schema
+                result = conn.execute(text("""
+                    SELECT table_name 
+                    FROM information_schema.tables 
+                    WHERE table_schema = 'parcels' 
+                    AND table_name LIKE '%_%'
+                    ORDER BY table_name
+                """))
+                
+                # Extract state codes from table names (format: state_county)
+                states = set()
+                for row in result.fetchall():
+                    table_name = row[0]
+                    if '_' in table_name:
+                        state = table_name.split('_')[0]
+                        states.add(state)
+                
+                states_list = sorted(list(states))
+                logger.info(f"Found {len(states_list)} available states: {states_list}")
+                return states_list
+                
+        except Exception as e:
+            logger.error(f"Error getting available states: {e}")
+            raise
+
+    def get_available_counties(self, state: str) -> List[str]:
+        """Get list of available counties for a given state from the database."""
+        try:
+            with self.db_utils.engine.connect() as conn:
+                # Query to get all table names in the parcels schema for the given state
+                result = conn.execute(text(f"""
+                    SELECT table_name 
+                    FROM information_schema.tables 
+                    WHERE table_schema = 'parcels' 
+                    AND table_name LIKE '{state}_%'
+                    ORDER BY table_name
+                """))
+                
+                # Extract county names from table names (format: state_county)
+                counties = []
+                for row in result.fetchall():
+                    table_name = row[0]
+                    if table_name.startswith(f"{state}_"):
+                        county = table_name[len(f"{state}_"):]
+                        counties.append(county)
+                
+                counties_list = sorted(counties)
+                logger.info(f"Found {len(counties_list)} available counties for state {state}: {counties_list}")
+                return counties_list
+                
+        except Exception as e:
+            logger.error(f"Error getting available counties for state {state}: {e}")
             raise
 
     def set_utility_filter(self, utility: str) -> None:

@@ -27,7 +27,7 @@ class ParcelRanker:
         self.ranking_data = None
         self.weights = None
         self.state = state.lower()
-        self.county = county.lower()
+        self.county = county.lower() if county else None
         # Sanitize utility provider name for file paths and table names
         if utility_provider:
             # Convert to lowercase and replace spaces with underscores

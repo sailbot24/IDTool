@@ -103,8 +103,8 @@ def run_parcel_pipeline(parcel_filter, selected_provider=None):
 def main():
     """Main function to run the parcel filtering and ranking process."""
     parser = argparse.ArgumentParser(description="Parcel Filtering and Ranking Tool")
-    parser.add_argument("--state", required=True, help="Two-letter state code (e.g., az)")
-    parser.add_argument("--county", help="County name (e.g., maricopa). If not provided, will analyze all counties in the state.")
+    parser.add_argument("--state", help="Two-letter state code (e.g., az). If not provided, will show interactive selection.")
+    parser.add_argument("--county", help="County name (e.g., maricopa). If not provided, will show interactive selection.")
     parser.add_argument("--db-config", default="db_config.txt", help="Path to database configuration file (default: db_config.txt)")
     parser.add_argument("--min-size", type=float, default=50.0,
                       help="Minimum parcel size in acres")
@@ -156,10 +156,82 @@ def main():
                     db_config[key.strip()] = value.strip()
             logger.info(f"Using database configuration from {args.db_config}")
             
-            # Initialize parcel filter
+            # Create a temporary ParcelFilter instance to get available states and counties
+            temp_filter = ParcelFilter(
+                state="temp",  # Temporary state for connection
+                db_config=db_config,
+                ranking_url=args.ranking_url,
+                transmission_distance=args.transmission_distance
+            )
+            
+            with temp_filter:
+                # Get available states
+                available_states = temp_filter.get_available_states()
+                
+                if not available_states:
+                    logger.error("No states found in the database")
+                    return
+                
+                # State selection
+                selected_state = args.state
+                if not selected_state:
+                    print("\nAvailable states:")
+                    for i, state in enumerate(available_states, 1):
+                        print(f"{i}. {state.upper()}")
+                    
+                    while True:
+                        try:
+                            choice = int(input("\nSelect a state (enter number): "))
+                            if 1 <= choice <= len(available_states):
+                                selected_state = available_states[choice - 1]
+                                break
+                            print("Invalid selection. Please try again.")
+                        except ValueError:
+                            print("Please enter a number.")
+                else:
+                    selected_state = selected_state.lower()
+                    if selected_state not in available_states:
+                        logger.error(f"State '{selected_state}' not found in available states: {available_states}")
+                        return
+                
+                logger.info(f"Selected state: {selected_state}")
+                
+                # Get available counties for the selected state
+                available_counties = temp_filter.get_available_counties(selected_state)
+                
+                if not available_counties:
+                    logger.error(f"No counties found for state {selected_state}")
+                    return
+                
+                # County selection
+                selected_county = args.county
+                if not selected_county:
+                    print(f"\nAvailable counties for {selected_state.upper()}:")
+                    for i, county in enumerate(available_counties, 1):
+                        print(f"{i}. {county.title()}")
+                    print("0. All counties in state")
+                    
+                    while True:
+                        try:
+                            choice = int(input("\nSelect a county (enter number): "))
+                            if 0 <= choice <= len(available_counties):
+                                selected_county = None if choice == 0 else available_counties[choice - 1]
+                                break
+                            print("Invalid selection. Please try again.")
+                        except ValueError:
+                            print("Please enter a number.")
+                else:
+                    selected_county = selected_county.lower()
+                    if selected_county not in available_counties:
+                        logger.error(f"County '{selected_county}' not found in available counties for state {selected_state}: {available_counties}")
+                        return
+                
+                logger.info(f"Selected county: {selected_county if selected_county else 'All counties'}")
+            
+            # Now create the actual ParcelFilter instance with selected state and county
             parcel_filter = ParcelFilter(
-                state=args.state,
-                county=args.county,
+                state=selected_state,
+                county=selected_county,
                 db_config=db_config,
                 ranking_url=args.ranking_url,
                 transmission_distance=args.transmission_distance
@@ -233,8 +305,8 @@ def main():
                             # Create and display the interactive map
                             create_parcel_map(
                                 ranked_parcels,
-                                args.state,
-                                args.county if args.county else "all_counties",
+                                selected_state,
+                                selected_county if selected_county else "all_counties",
                                 output_dir,
                                 db_connection=parcel_filter.db_utils.engine
                             )

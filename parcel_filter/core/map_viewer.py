@@ -215,6 +215,8 @@ def create_parcel_map(parcels: gpd.GeoDataFrame, state: str, county: str, output
                 """
                 substations_df = db_connection.execute(substations_query).df()
                 if not substations_df.empty:
+                    # All columns and table names are now lowercase
+                    substations_df.columns = [col.lower() for col in substations_df.columns]
                     substations_df['geometry'] = gpd.GeoSeries.from_wkt(substations_df['geom_wkt'])
                     substations_gdf = gpd.GeoDataFrame(substations_df.drop(columns=['geom_wkt']), geometry='geometry', crs=4326)
                     for idx, row in substations_gdf.iterrows():
