@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 import sys
 from parcel_filter.core.filter import ParcelFilter
-from parcel_filter.core.ranking import ParcelRanker
+from parcel_filter.core.mcda_ranking import MCDARanker
 import geopandas as gpd
 from parcel_filter.core.map_viewer import create_parcel_map
 from parcel_filter.core.version import VERSION, GITHUB_REPO, check_for_updates, setup_environment, update_application, ensure_environment
