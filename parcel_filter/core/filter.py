@@ -322,6 +322,86 @@ class ParcelFilter:
             logger.error(f"Error filtering parcels by power operator: {e}")
             raise
 
+    def filter_roadway_distance(self, max_distance: Optional[float] = None) -> None:
+        """Filter parcels based on roadway distance using the hwy_distance column.
+        
+        Args:
+            max_distance: Maximum distance to roadway in meters. If None, will prompt user for input.
+        """
+        # First check if hwy_distance column exists
+        try:
+            with self.db_utils.engine.connect() as conn:
+                # Check if hwy_distance column exists in the current filtered table
+                result = conn.execute(text(f"""
+                    SELECT column_name 
+                    FROM information_schema.columns 
+                    WHERE table_name = '{self.filtered_parcels_table}' 
+                    AND column_name = 'hwy_distance'
+                """))
+                
+                if not result.fetchone():
+                    logger.warning("hwy_distance column not found in the data. Skipping roadway distance filter.")
+                    return
+                    
+        except Exception as e:
+            logger.error(f"Error checking for hwy_distance column: {e}")
+            return
+        
+        if max_distance is None:
+            # Prompt user for roadway distance filter
+            print("\nRoadway Distance Filter")
+            print("Do you want to filter parcels by distance to nearest roadway?")
+            while True:
+                choice = input("Enter 'y' for yes or 'n' for no: ").lower().strip()
+                if choice in ['y', 'n']:
+                    break
+                print("Please enter 'y' or 'n'.")
+            
+            if choice == 'n':
+                logger.info("Roadway distance filter skipped by user")
+                return
+            
+            # Prompt for distance
+            while True:
+                try:
+                    distance_input = input("Enter maximum distance to roadway in meters: ")
+                    max_distance = float(distance_input)
+                    if max_distance > 0:
+                        break
+                    print("Distance must be greater than 0.")
+                except ValueError:
+                    print("Please enter a valid number.")
+        
+        logger.info(f"Filtering parcels based on roadway distance: {max_distance} meters")
+        
+        try:
+            with self.db_utils.engine.connect() as conn:
+                # Create filtered parcels table using PostGIS with a unique name
+                temp_table = f"parcels_filtered_roadway_{int(time.time())}"
+                sql = f"""
+                CREATE TEMP TABLE {temp_table} AS
+                SELECT p.*
+                FROM {self.filtered_parcels_table} p
+                WHERE p.hwy_distance <= {max_distance};
+                """
+                
+                # Execute the SQL
+                conn.execute(text(sql))
+                conn.commit()
+                
+                # Get count of filtered parcels
+                result = conn.execute(text(f"SELECT COUNT(*) FROM {temp_table}"))
+                count = result.scalar()
+                logger.info(f"Created temporary {temp_table} with {count} rows")
+                
+                # Update the filtered parcels table name
+                self.filtered_parcels_table = temp_table
+                logger.info(f"Parcel count after roadway distance filtering: {count}")
+                
+        except Exception as e:
+            logger.error(f"Error filtering parcels by roadway distance: {e}")
+            raise
+
     def cleanup(self) -> None:
         """Clean up temporary and filtered tables from the database."""
         try:
@@ -637,3 +717,47 @@ class ParcelFilter:
             None otherwise.
         """
         return getattr(self, 'final_results_table', None)
+
+    def get_final_parcel_count(self) -> int:
+        """Get the count of final parcels after all filtering and ranking.
+        
+        Returns:
+            Number of parcels in the final results, or 0 if no parcels available.
+        """
+        if self.filtered_parcels is not None:
+            return len(self.filtered_parcels)
+        elif self.final_results_table:
+            # Try to get count from the final results table
+            try:
+                with self.db_utils.engine.connect() as conn:
+                    result = conn.execute(text(f"SELECT COUNT(*) FROM {self.final_results_table}"))
+                    return result.scalar()
+            except Exception as e:
+                logger.error(f"Error getting final parcel count: {e}")
+                return 0
+        else:
+            return 0
+
+    def get_filtering_summary(self) -> Dict[str, Any]:
+        """Get a summary of the filtering process and final results.
+        
+        Returns:
+            Dictionary containing filtering statistics and final results info.
+        """
+        summary = {
+            'final_parcel_count': self.get_final_parcel_count(),
+            'final_results_table': self.final_results_table,
+            'state': self.state,
+            'county': self.county,
+            'transmission_distance': self.transmission_distance,
+            'power_provider': self.power_provider,
+            'utility_filter': self.utility_filter
+        }
+        
+        # Add ranking statistics if available
+        if hasattr(self, 'ranking_data') and self.ranking_data is not None:
+            summary['ranking_data_loaded'] = True
+        else:
+            summary['ranking_data_loaded'] = False
+            
+        return summary

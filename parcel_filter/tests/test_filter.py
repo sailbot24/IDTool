@@ -44,6 +44,14 @@ def test_filter_transmission_lines(test_db, test_data_dir):
         filter.filter_transmission_lines(distance_meters=100.0)
         assert filter.filtered_parcels is not None
 
+def test_filter_roadway_distance(test_db, test_data_dir):
+    """Test roadway distance filtering functionality."""
+    with ParcelFilter(state="az", county="maricopa", data_dir=test_data_dir) as filter:
+        filter.load_parcels(min_size=50.0)
+        # Test with a specific distance
+        filter.filter_roadway_distance(max_distance=1000.0)
+        assert filter.filtered_parcels is not None
+
 def test_calculate_drive_times(test_db, test_data_dir):
     """Test drive time calculation functionality."""
     with ParcelFilter(state="az", county="maricopa", data_dir=test_data_dir) as filter:

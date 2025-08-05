@@ -2,7 +2,7 @@
 
 ## 🚀 Features
 
-- **Multi-criteria Parcel Filtering**: Filter parcels by size, airport proximity, transmission line distance, and utility provider
+- **Multi-criteria Parcel Filtering**: Filter parcels by size, airport proximity, transmission line distance, roadway distance, and utility provider
 - **Advanced Ranking System**: Rank parcels using weighted criteria including zoning, land activity, site characteristics, and flood risk
 - **Interactive Mapping**: Generate interactive maps with Folium for visual analysis
 - **PostgreSQL Integration**: Full PostGIS support for spatial data processing
@@ -154,6 +154,7 @@ python main.py \
   --county adams \
   --min-size 50.0 \
   --transmission-distance 100.0 \
+  --roadway-distance 500.0 \
   --quick-view \
   --show-graph
 ```
@@ -167,6 +168,7 @@ python main.py \
 | `--db-config` | Database config file path | `db_config.txt` |
 | `--min-size` | Minimum parcel size in acres | `50.0` |
 | `--transmission-distance` | Max distance to transmission lines (meters) | `100.0` |
+| `--roadway-distance` | Max distance to roadway in meters | Interactive prompt |
 | `--provider` | Power utility provider to filter by | Interactive selection |
 | `--ranking-url` | Google Sheets URL for ranking data | Default URL |
 | `--quick-view` | Create interactive map | False |
@@ -182,6 +184,7 @@ The tool follows a 6-step pipeline:
 2. **Apply Filters**: 
    - Filter out parcels intersecting airports
    - Filter by transmission line distance
+   - Filter by roadway distance (if enabled)
    - Filter by utility provider (if selected)
 3. **Calculate Drive Times**: Use isochrone data to calculate drive times
 4. **Rank Parcels**: Apply multi-criteria ranking algorithm

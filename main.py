@@ -51,12 +51,13 @@ def read_db_config(config_path):
         logging.error(f"Error reading database configuration: {e}")
         raise
 
-def run_parcel_pipeline(parcel_filter, selected_provider=None):
+def run_parcel_pipeline(parcel_filter, selected_provider=None, roadway_distance=None):
     """Run the complete parcel filtering and ranking pipeline in the correct order.
     
     Args:
         parcel_filter: ParcelFilter instance
         selected_provider: Optional power provider to filter by
+        roadway_distance: Optional maximum distance to roadway in meters
         
     Returns:
         bool: True if pipeline completed successfully, False otherwise
@@ -72,6 +73,7 @@ def run_parcel_pipeline(parcel_filter, selected_provider=None):
         logger.info("Step 2: Applying filters...")
         parcel_filter.filter_airports()
         parcel_filter.filter_transmission_lines()
+        parcel_filter.filter_roadway_distance(roadway_distance)  # New roadway distance filter
         if selected_provider:
             parcel_filter.filter_power_provider(selected_provider)
             # Set the utility filter for table naming
@@ -93,6 +95,34 @@ def run_parcel_pipeline(parcel_filter, selected_provider=None):
         logger.info("Step 6: Cleaning up temporary data...")
         parcel_filter.cleanup()
         
+        # Display final count and summary
+        final_count = parcel_filter.get_final_parcel_count()
+        if final_count > 0:
+            logger.info("=" * 60)
+            logger.info(f"🎯 FINAL RESULTS: {final_count:,} parcels identified and ranked")
+            logger.info("=" * 60)
+            
+            # Also print to console for better visibility
+            print("\n" + "=" * 60)
+            print(f"🎯 FINAL RESULTS: {final_count:,} parcels identified and ranked")
+            print("=" * 60)
+            
+            # Display summary information
+            summary = parcel_filter.get_filtering_summary()
+            logger.info("📊 FILTERING SUMMARY:")
+            logger.info(f"  State: {summary['state'].upper()}")
+            logger.info(f"  County: {summary['county'].title() if summary['county'] else 'All counties'}")
+            logger.info(f"  Transmission Distance: {summary['transmission_distance']} meters")
+            logger.info(f"  Power Provider: {summary['power_provider'] if summary['power_provider'] else 'All providers'}")
+            logger.info(f"  Results Table: {summary['final_results_table']}")
+            
+            print(f"\n📊 Summary: {summary['state'].upper()} - {summary['county'].title() if summary['county'] else 'All counties'}")
+            print(f"   Transmission Distance: {summary['transmission_distance']} meters")
+            print(f"   Power Provider: {summary['power_provider'] if summary['power_provider'] else 'All providers'}")
+        else:
+            logger.warning("No final parcels available to count")
+            print("\n WARNING: No final parcels available to count")
+        
         logger.info("PIPELINE COMPLETED SUCCESSFULLY")
         return True
         
@@ -110,6 +140,8 @@ def main():
                       help="Minimum parcel size in acres")
     parser.add_argument("--transmission-distance", type=float, default=100.0,
                       help="Maximum distance to transmission lines in meters")
+    parser.add_argument("--roadway-distance", type=float,
+                      help="Maximum distance to roadway in meters (if not provided, will prompt user)")
     parser.add_argument("--provider", type=str,
                       help="Power utility provider to filter by")
     parser.add_argument("--ranking-url", 
@@ -265,7 +297,7 @@ def main():
                 logger.info(f"Selected power provider: {selected_provider if selected_provider else 'None'}")
                 
                 # Run the pipeline
-                if run_parcel_pipeline(parcel_filter, selected_provider):
+                if run_parcel_pipeline(parcel_filter, selected_provider, args.roadway_distance):
                     # Show quick view if requested
                     if args.quick_view:
                         # Create results directory
