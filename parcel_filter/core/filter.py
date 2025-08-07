@@ -113,18 +113,30 @@ class ParcelFilter:
                 unwanted_df = pd.read_csv(unwanted_url)
                 unwanted_df.columns = unwanted_df.columns.str.strip()
                 logger.info(f"Unwanted activities columns: {unwanted_df.columns.tolist()}")
-                # Convert 'Unwanted' column to boolean
-                unwanted_col = unwanted_df['Unwanted']
-                logger.info(f"Unique values in 'Unwanted' column: {unwanted_col.unique()}")
-                # Convert to bool: treat 'TRUE', True, 1 as True
-                unwanted_bool = unwanted_col.apply(lambda x: str(x).strip().upper() == 'TRUE' or x is True or x == 1)
-                unwanted_activities = unwanted_df[unwanted_bool]['Land Use'].tolist()
                 
-                # Clean up the strings (remove any whitespace)
-                unwanted_activities = [activity.strip() for activity in unwanted_activities]
+                # Handle both Land Use and Ownership columns
+                unwanted_activities = []
                 
-                logger.info(f"Loaded {len(unwanted_activities)} unwanted activities from Google Sheets")
-                logger.debug(f"Unwanted activities: {unwanted_activities}")
+                # Process Land Use column
+                if 'Land Use' in unwanted_df.columns and 'Unwanted' in unwanted_df.columns:
+                    land_use_col = unwanted_df['Unwanted']
+                    logger.info(f"Unique values in 'Unwanted' column: {land_use_col.unique()}")
+                    # Convert to bool: treat 'TRUE', True, 1 as True
+                    unwanted_bool = land_use_col.apply(lambda x: str(x).strip().upper() == 'TRUE' or x is True or x == 1)
+                    land_use_unwanted = unwanted_df[unwanted_bool]['Land Use'].tolist()
+                    unwanted_activities.extend([activity.strip() for activity in land_use_unwanted])
+                
+                # Process Ownership column if it exists
+                if 'Ownership' in unwanted_df.columns and 'Unwanted.1' in unwanted_df.columns:
+                    ownership_col = unwanted_df['Unwanted.1']
+                    logger.info(f"Unique values in 'Unwanted.1' column: {ownership_col.unique()}")
+                    # Convert to bool: treat 'TRUE', True, 1 as True
+                    unwanted_bool = ownership_col.apply(lambda x: str(x).strip().upper() == 'TRUE' or x is True or x == 1)
+                    ownership_unwanted = unwanted_df[unwanted_bool]['Ownership'].tolist()
+                    unwanted_activities.extend([ownership.strip() for ownership in ownership_unwanted])
+                
+                logger.info(f"Loaded {len(unwanted_activities)} unwanted activities/ownerships from Google Sheets")
+                logger.debug(f"Unwanted activities/ownerships: {unwanted_activities}")
                 return unwanted_activities
             else:
                 raise ValueError("Invalid Google Sheets URL")
@@ -149,7 +161,8 @@ class ParcelFilter:
                     SELECT p.*
                     FROM {table_name} p
                     WHERE p.gisacre > {min_size}
-                    AND p.usedesc NOT IN :unwanted_activities
+                    AND (p.usedesc IS NULL OR p.usedesc NOT IN :unwanted_activities)
+                    AND (p.lbcs_ownership_desc IS NULL OR p.lbcs_ownership_desc NOT IN :unwanted_activities)
                     """
                     conn.execute(text(sql), {"unwanted_activities": tuple(self.unwanted_activities)})
                 else:
@@ -178,7 +191,8 @@ class ParcelFilter:
                         SELECT p.*
                         FROM {table_name} p
                         WHERE p.gisacre > {min_size}
-                        AND p.usedesc NOT IN :unwanted_activities
+                        AND (p.usedesc IS NULL OR p.usedesc NOT IN :unwanted_activities)
+                        AND (p.lbcs_ownership_desc IS NULL OR p.lbcs_ownership_desc NOT IN :unwanted_activities)
                         """)
                     
                     sql = f"""
@@ -615,13 +629,16 @@ class ParcelFilter:
             for i, parcel in enumerate(ranking_stats['top_parcels'], 1):
                 logger.info(f"  {i}. Parcel {parcel['parcelnumb']}: Score {parcel['parcel_rank_normalized']:.2f}")
                 logger.info(f"     Zoning: {parcel['zoning_type']}")
-                logger.info(f"     Activity: {parcel['lbcs_activity_desc']}")
+                logger.info(f"     Site Description: {parcel['lbcs_site_desc']}")
+            
+            # Save results to CSV and log files
+            self.save_results_to_files(ranking_stats)
             
             # Clean up temporary tables
             with self.db_utils.engine.connect() as conn:
                 conn.execute(text("""
                     DROP TABLE IF EXISTS zoning_rankings;
-                    DROP TABLE IF EXISTS activity_rankings;
+                    DROP TABLE IF EXISTS site_rankings;
                     DROP TABLE IF EXISTS fema_rankings;
                 """))
                 conn.commit()
@@ -761,3 +778,120 @@ class ParcelFilter:
             summary['ranking_data_loaded'] = False
             
         return summary
+
+    def save_results_to_files(self, ranking_stats: Dict = None) -> None:
+        """Save ranking results to CSV and log files in the results folder.
+        
+        Args:
+            ranking_stats: Dictionary containing ranking statistics
+        """
+        try:
+            from pathlib import Path
+            from datetime import datetime
+            
+            # Create results directory if it doesn't exist
+            results_dir = Path("results")
+            results_dir.mkdir(exist_ok=True)
+            
+            # Generate timestamp for file names
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            
+            # Generate provider name for file naming
+            if self.utility_filter:
+                provider_name = self.utility_filter.lower().replace(' ', '_')
+                provider_name = re.sub(r'[^a-z0-9_]', '', provider_name)
+                if provider_name and provider_name[0].isdigit():
+                    provider_name = 'provider_' + provider_name
+                if not provider_name:
+                    provider_name = 'unknown_provider'
+            else:
+                provider_name = 'all_providers'
+            
+            # Create file names
+            csv_filename = f"{self.state}_{self.county}_{provider_name}_{timestamp}.csv"
+            log_filename = f"{self.state}_{self.county}_{provider_name}_{timestamp}.log"
+            
+            csv_path = results_dir / csv_filename
+            log_path = results_dir / log_filename
+            
+            # Save ranked parcels to CSV
+            if self.filtered_parcels is not None and not self.filtered_parcels.empty:
+                # Select key columns for the CSV
+                csv_columns = [
+                    'parcelnumb', 'parcel_rank_normalized', 'mcda_score',
+                    'zoning_type', 'zoning_subtype', 'lbcs_site_desc',
+                    'fema_nri_risk_rating', 'fema_flood_zone', 'fema_flood_zone_subtype',
+                    'gisacre', 'drive_time', 'et_distance', 'hwy_distance',
+                    'zoning_score', 'site_score', 'nri_score', 'flood_score'
+                ]
+                
+                # Filter to only include columns that exist
+                available_columns = [col for col in csv_columns if col in self.filtered_parcels.columns]
+                csv_data = self.filtered_parcels[available_columns].copy()
+                
+                # Sort by ranking score (highest first)
+                if 'parcel_rank_normalized' in csv_data.columns:
+                    csv_data = csv_data.sort_values('parcel_rank_normalized', ascending=False)
+                
+                # Save to CSV
+                csv_data.to_csv(csv_path, index=False)
+                logger.info(f"Ranking results saved to CSV: {csv_path}")
+            
+            # Save log file with final output
+            log_content = []
+            log_content.append("=" * 60)
+            log_content.append("🎯 FINAL RESULTS")
+            log_content.append("=" * 60)
+            log_content.append(f"Total parcels identified and ranked: {len(self.filtered_parcels) if self.filtered_parcels is not None else 0}")
+            log_content.append("")
+            
+            # Add ranking statistics if available
+            if ranking_stats:
+                log_content.append("📊 MCDA RANKING STATISTICS:")
+                log_content.append(f"  Total parcels: {ranking_stats.get('total_parcels', 'N/A')}")
+                log_content.append(f"  Min score: {ranking_stats.get('min_score', 'N/A'):.2f}")
+                log_content.append(f"  Max score: {ranking_stats.get('max_score', 'N/A'):.2f}")
+                log_content.append(f"  Mean score: {ranking_stats.get('mean_score', 'N/A'):.2f}")
+                log_content.append(f"  Median score: {ranking_stats.get('median_score', 'N/A'):.2f}")
+                log_content.append(f"  Standard deviation: {ranking_stats.get('std_dev', 'N/A'):.2f}")
+                log_content.append("")
+                
+                # Add top parcels
+                if 'top_parcels' in ranking_stats:
+                    log_content.append("🏆 TOP 5 PARCELS BY MCDA RANKING:")
+                    for i, parcel in enumerate(ranking_stats['top_parcels'], 1):
+                        log_content.append(f"  {i}. Parcel {parcel['parcelnumb']}: Score {parcel['parcel_rank_normalized']:.2f}")
+                        log_content.append(f"     Zoning: {parcel.get('zoning_type', 'N/A')}")
+                        log_content.append(f"     Site Description: {parcel.get('lbcs_site_desc', 'N/A')}")
+                    log_content.append("")
+            
+            # Add filtering summary
+            log_content.append("📊 FILTERING SUMMARY:")
+            log_content.append(f"  State: {self.state.upper()}")
+            log_content.append(f"  County: {self.county.title() if self.county else 'All counties'}")
+            log_content.append(f"  Transmission Distance: {self.transmission_distance} meters")
+            log_content.append(f"  Power Provider: {self.utility_filter if self.utility_filter else 'All providers'}")
+            if hasattr(self, 'final_results_table') and self.final_results_table:
+                log_content.append(f"  Results Table: {self.final_results_table}")
+            log_content.append("")
+            
+            # Add MCDA weights
+            if self.ranker and self.ranker.weights:
+                log_content.append("⚖️ MCDA WEIGHTS:")
+                for weight_name, weight_value in self.ranker.weights.items():
+                    log_content.append(f"  {weight_name}: {weight_value}")
+                log_content.append("")
+            
+            # Add timestamp
+            log_content.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            log_content.append("=" * 60)
+            
+            # Write log file
+            with open(log_path, 'w') as f:
+                f.write('\n'.join(log_content))
+            
+            logger.info(f"Final results log saved to: {log_path}")
+            
+        except Exception as e:
+            logger.error(f"Error saving results to files: {e}")
+            raise

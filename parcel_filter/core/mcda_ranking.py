@@ -111,14 +111,12 @@ class MCDARanker:
         Raises:
             ValueError: If validation fails
         """
-        # Required columns for ranking data
+        # Required columns for ranking data (updated for new structure)
         required_columns = [
-            'zoning_type', 'zoning_subtype', 'lbcs_activity_desc', 
-            'lbcs_site_desc', 'lbcs_ownership_desc', 'fema_nri_risk_rating',
-            'fema_flood_zone', 'fema_flood_zone_subtype',
-            'Zoning Ranking', 'Zoning Subtype Ranking', 'Land Activity Ranking',
-            'Site Descirption Ranking', 'Ownership Ranking', 
-            'Fema NRI Flood Risk Ranking', 'Fema Flood Zone Ranking', 
+            'zoning_type', 'zoning_subtype', 'lbcs_site_desc', 
+            'fema_nri_risk_rating', 'fema_flood_zone', 'fema_flood_zone_subtype',
+            'Zoning Ranking', 'Zoning Subtype Ranking', 'Site Descirption Ranking', 
+            'Fema NRI Risk Ranking', 'Fema Flood Zone Ranking', 
             'Fema Flood Zone Subtype Ranking'
         ]
         
@@ -126,8 +124,8 @@ class MCDARanker:
         if missing_cols:
             raise ValueError(f"Missing required columns in ranking data: {missing_cols}")
         
-        # Validate weights
-        required_weights = ['zoning_subtype', 'activity', 'site', 'fema_nri']
+        # Validate weights (updated for new structure)
+        required_weights = ['zoning', 'description', 'fema_nri', 'flood']
         missing_weights = [w for w in required_weights if w not in self.weights]
         if missing_weights:
             raise ValueError(f"Missing required weights: {missing_weights}")
@@ -150,8 +148,8 @@ class MCDARanker:
         # Create zoning rankings table
         self._create_zoning_rankings_table(conn)
         
-        # Create activity rankings table
-        self._create_activity_rankings_table(conn)
+        # Create site description rankings table
+        self._create_site_rankings_table(conn)
         
         # Create FEMA rankings table
         self._create_fema_rankings_table(conn)
@@ -181,36 +179,28 @@ class MCDARanker:
                 AS t(zoning_type, zoning_subtype, zoning_ranking, zoning_subtype_ranking);
             """))
     
-    def _create_activity_rankings_table(self, conn) -> None:
-        """Create temporary table for activity rankings."""
-        activity_values = []
+    def _create_site_rankings_table(self, conn) -> None:
+        """Create temporary table for site description rankings."""
+        site_values = []
         for _, row in self.ranking_data.iterrows():
-            if pd.notna(row['lbcs_activity_desc']):
+            if pd.notna(row['lbcs_site_desc']):
                 # Handle NULL values properly in PostgreSQL
                 site_desc = f"'{row['lbcs_site_desc']}'" if pd.notna(row['lbcs_site_desc']) else 'NULL'
-                ownership_desc = f"'{row['lbcs_ownership_desc']}'" if pd.notna(row['lbcs_ownership_desc']) else 'NULL'
-                activity_rank = row['Land Activity Ranking'] if pd.notna(row['Land Activity Ranking']) else 'NULL'
                 site_rank = row['Site Descirption Ranking'] if pd.notna(row['Site Descirption Ranking']) else 'NULL'
-                ownership_rank = row['Ownership Ranking'] if pd.notna(row['Ownership Ranking']) else 'NULL'
                 
                 # Escape single quotes in string values
-                activity_desc = row['lbcs_activity_desc'].replace("'", "''")
+                site_desc_clean = row['lbcs_site_desc'].replace("'", "''") if pd.notna(row['lbcs_site_desc']) else ''
                 
-                activity_values.append(f"('{activity_desc}', {site_desc}, {ownership_desc}, {activity_rank}, {site_rank}, {ownership_rank})")
+                site_values.append(f"('{site_desc_clean}', {site_rank})")
         
-        if activity_values:
+        if site_values:
             conn.execute(text(f"""
-                CREATE TEMP TABLE activity_rankings AS
+                CREATE TEMP TABLE site_rankings AS
                 SELECT 
-                    lbcs_activity_desc,
                     lbcs_site_desc,
-                    lbcs_ownership_desc,
-                    activity_ranking,
-                    site_ranking,
-                    ownership_ranking
-                FROM (VALUES {','.join(activity_values)}) 
-                AS t(lbcs_activity_desc, lbcs_site_desc, lbcs_ownership_desc, 
-                     activity_ranking, site_ranking, ownership_ranking);
+                    site_ranking
+                FROM (VALUES {','.join(site_values)}) 
+                AS t(lbcs_site_desc, site_ranking);
             """))
     
     def _create_fema_rankings_table(self, conn) -> None:
@@ -223,7 +213,7 @@ class MCDARanker:
                 flood_zone = row['fema_flood_zone'].replace("'", "''") if pd.notna(row['fema_flood_zone']) else ''
                 flood_subtype = row['fema_flood_zone_subtype'].replace("'", "''") if pd.notna(row['fema_flood_zone_subtype']) else ''
                 
-                fema_values.append(f"('{fema_nri}', '{flood_zone}', '{flood_subtype}', {row['Fema NRI Flood Risk Ranking']}, {row['Fema Flood Zone Ranking']}, {row['Fema Flood Zone Subtype Ranking']})")
+                fema_values.append(f"('{fema_nri}', '{flood_zone}', '{flood_subtype}', {row['Fema NRI Risk Ranking']}, {row['Fema Flood Zone Ranking']}, {row['Fema Flood Zone Subtype Ranking']})")
         
         if fema_values:
             conn.execute(text(f"""
@@ -279,7 +269,26 @@ class MCDARanker:
             filtered_parcels_table: Name of the filtered parcels table
             final_table_name: Name for the final results table
         """
-        # Create the MCDA calculation with proper normalization
+        # First check if we have enough parcels to rank
+        count_result = conn.execute(text(f"SELECT COUNT(*) FROM {filtered_parcels_table}"))
+        parcel_count = count_result.scalar()
+        
+        if parcel_count == 0:
+            raise ValueError("No parcels to rank. All parcels were filtered out.")
+        elif parcel_count == 1:
+            # Handle single parcel case - assign a default score
+            conn.execute(text(f"""
+                CREATE TABLE {final_table_name} AS
+                SELECT 
+                    p.*,
+                    5.0 as mcda_score,
+                    5.0 as parcel_rank_normalized
+                FROM {filtered_parcels_table} p
+            """))
+            logger.warning(f"Only 1 parcel found. Assigned default score of 5.0.")
+            return
+        
+        # Create the MCDA calculation with proper normalization (for multiple parcels)
         conn.execute(text(f"""
             CREATE TABLE {final_table_name} AS
             WITH normalized_criteria AS (
@@ -323,10 +332,8 @@ class MCDARanker:
                     COALESCE(z.zoning_ranking, 5) as zoning_ranking,
                     COALESCE(z.zoning_subtype_ranking, 5) as zoning_subtype_ranking,
                     
-                    -- Map activity rankings with proper NULL handling
-                    COALESCE(a.activity_ranking, 5) as activity_ranking,
-                    COALESCE(a.site_ranking, 5) as site_ranking,
-                    COALESCE(a.ownership_ranking, 5) as ownership_ranking,
+                    -- Map site description rankings with proper NULL handling
+                    COALESCE(s.site_ranking, 5) as site_ranking,
                     
                     -- Map FEMA rankings with proper NULL handling
                     COALESCE(f.fema_nri_ranking, 5) as fema_nri_ranking,
@@ -336,10 +343,8 @@ class MCDARanker:
                 LEFT JOIN zoning_rankings z 
                     ON n.zoning_type = z.zoning_type 
                     AND n.zoning_subtype = z.zoning_subtype
-                LEFT JOIN activity_rankings a 
-                    ON n.lbcs_activity_desc = a.lbcs_activity_desc
-                    AND n.lbcs_site_desc = a.lbcs_site_desc
-                    AND n.lbcs_ownership_desc = a.lbcs_ownership_desc
+                LEFT JOIN site_rankings s 
+                    ON n.lbcs_site_desc = s.lbcs_site_desc
                 LEFT JOIN fema_rankings f 
                     ON n.fema_nri_risk_rating = f.fema_nri_risk_rating
                     AND n.fema_flood_zone = f.fema_flood_zone
@@ -349,38 +354,32 @@ class MCDARanker:
                 SELECT 
                     *,
                     -- Calculate MCDA composite scores for each criterion group
-                    -- Zoning criterion (zoning_subtype weight)
-                    {self.weights['zoning_subtype']} * (zoning_ranking + zoning_subtype_ranking) as zoning_score,
+                    -- Zoning criterion (mean of type and subtype)
+                    {self.weights['zoning']} * (zoning_ranking + zoning_subtype_ranking) / 2 as zoning_score,
                     
-                    -- Activity criterion (activity weight) - composite of multiple factors
-                    {self.weights['activity']} * (
-                        site_ranking * 0.3 + 
-                        activity_ranking * 0.3 + 
-                        ownership_ranking * 0.2 + 
-                        gisacre_norm * 0.1 + 
-                        building_coverage_norm * 0.1
-                    ) as activity_score,
+                    -- Site Description criterion (description weight)
+                    {self.weights['description']} * site_ranking as site_score,
                     
-                    -- Site criterion (site weight) - accessibility factors
-                    {self.weights['site']} * (drive_time_norm + transmission_distance_norm) / 2 as site_score,
+                    -- NRI Risk criterion (fema_nri weight)
+                    {self.weights['fema_nri']} * fema_nri_ranking as nri_score,
                     
-                    -- FEMA criterion (fema_nri weight) - flood risk factors
-                    {self.weights['fema_nri']} * (fema_nri_ranking + flood_zone_ranking + flood_subtype_ranking) as fema_score
+                    -- Flood criterion (flood weight)
+                    {self.weights['flood']} * (flood_zone_ranking + flood_subtype_ranking) as flood_score
                 FROM mapped_rankings
             )
             SELECT 
                 *,
                 -- Calculate final MCDA score
-                zoning_score + activity_score + site_score + fema_score as mcda_score,
+                zoning_score + site_score + nri_score + flood_score as mcda_score,
                 
                 -- Normalize final score to 0-10 range
                 CASE 
-                    WHEN MIN(zoning_score + activity_score + site_score + fema_score) OVER () = 
-                         MAX(zoning_score + activity_score + site_score + fema_score) OVER () THEN 5
-                    ELSE (zoning_score + activity_score + site_score + fema_score - 
-                          MIN(zoning_score + activity_score + site_score + fema_score) OVER ()) / 
-                         (MAX(zoning_score + activity_score + site_score + fema_score) OVER () - 
-                          MIN(zoning_score + activity_score + site_score + fema_score) OVER ()) * 10
+                    WHEN MIN(zoning_score + site_score + nri_score + flood_score) OVER () = 
+                         MAX(zoning_score + site_score + nri_score + flood_score) OVER () THEN 5
+                    ELSE (zoning_score + site_score + nri_score + flood_score - 
+                          MIN(zoning_score + site_score + nri_score + flood_score) OVER ()) / 
+                         (MAX(zoning_score + site_score + nri_score + flood_score) OVER () - 
+                          MIN(zoning_score + site_score + nri_score + flood_score) OVER ()) * 10
                 END as parcel_rank_normalized
             FROM mcda_scores
             ORDER BY parcel_rank_normalized DESC
@@ -421,7 +420,7 @@ class MCDARanker:
         
         # Get top 5 parcels
         top_query = f"""
-            SELECT parcelnumb, parcel_rank_normalized, zoning_type, lbcs_activity_desc
+            SELECT parcelnumb, parcel_rank_normalized, zoning_type, lbcs_site_desc
             FROM {final_table_name}
             ORDER BY parcel_rank_normalized DESC
             LIMIT 5
@@ -434,7 +433,7 @@ class MCDARanker:
                 'parcelnumb': row[0],
                 'parcel_rank_normalized': row[1],
                 'zoning_type': row[2],
-                'lbcs_activity_desc': row[3]
+                'lbcs_site_desc': row[3]
             })
         
         return {
