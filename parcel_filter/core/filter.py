@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 from typing import List, Optional, Union, Dict, Any
 from .mcda_ranking import MCDARanker
+from .mco_ranking import MCORanker
 import os
 import geopandas as gpd
 import numpy as np
@@ -12,7 +13,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 from geoalchemy2 import Geometry
 from datetime import datetime
-from .db_utils import DatabaseUtils
+from .db_utils import DatabaseUtils, DatabaseManager
 import time
 
 logger = logging.getLogger(__name__)
@@ -22,7 +23,9 @@ class ParcelFilter:
                  db_config: Optional[Dict[str, str]] = None,
                  ranking_url: Optional[str] = None,
                  data_dir: str = "",
-                 transmission_distance: float = 100.0):
+                 transmission_distance: float = 100.0,
+                 ranking_method: str = "MCDA",
+                 db_manager: Optional['DatabaseManager'] = None):
         """
         Initialize ParcelFilter with PostgreSQL connection.
         
@@ -39,6 +42,7 @@ class ParcelFilter:
             ranking_url: URL to Google Sheets document containing ranking data
             data_dir: Directory containing data files
             transmission_distance: Maximum distance to transmission lines in meters (default: 100.0)
+            db_manager: Optional DatabaseManager instance to reuse existing connection
         """
         self.state = state.lower()
         self.county = county.lower() if county else None
@@ -48,9 +52,19 @@ class ParcelFilter:
             'database': 'LandAI',
             'user': 'postgres'
         }
-        self.db_utils = DatabaseUtils(state, county, db_config)
+        self.db_utils = DatabaseUtils(state, county, db_config, db_manager)
         self.ranking_url = ranking_url
-        self.ranker = MCDARanker(ranking_url, self.state, self.county or "") if ranking_url else None
+        self.ranking_method = ranking_method.upper()
+        
+        # Initialize the appropriate ranker based on the method
+        if ranking_url:
+            if self.ranking_method == "MCO":
+                self.ranker = MCORanker(ranking_url, self.state, self.county or "")
+            else:
+                self.ranker = MCDARanker(ranking_url, self.state, self.county or "")
+        else:
+            self.ranker = None
+            
         self.isochrone_data = None
         self.filtered_parcels = None
         self.unwanted_activities = None
@@ -69,10 +83,9 @@ class ParcelFilter:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Context manager exit - ensures connection is closed."""
-        if self.db_utils.engine is not None:
-            self.db_utils.engine.dispose()
-            self.db_utils.engine = None
+        """Context manager exit - connection cleanup is handled by DatabaseManager."""
+        # Note: We don't dispose here anymore since the manager handles the connection lifecycle
+        pass
 
     def connect(self):
         """Connect to PostgreSQL database."""
@@ -566,7 +579,10 @@ class ParcelFilter:
                 self.ranker.utility_provider = 'all_providers'
         elif self.ranking_url and not self.ranker:
             # Create a new ranker if one doesn't exist
-            self.ranker = MCDARanker(self.ranking_url, self.state, self.county, utility)
+            if self.ranking_method == "MCO":
+                self.ranker = MCORanker(self.ranking_url, self.state, self.county, utility)
+            else:
+                self.ranker = MCDARanker(self.ranking_url, self.state, self.county, utility)
 
     def save_results_to_db(self, table_name: str = None) -> None:
         """Save the filtered and ranked parcels to the results schema in PostgreSQL.
@@ -585,7 +601,7 @@ class ParcelFilter:
             self.db_utils.save_results_to_db(self.filtered_parcels, table_name, self.utility_filter)
 
     def rank_parcels_in_postgis(self) -> None:
-        """Rank parcels using MCDA (Multi-Criteria Decision Analysis) in PostGIS."""
+        """Rank parcels using MCDA or MCO in PostGIS."""
         try:
             # First, ensure we have the ranking data
             if not self.ranker:
@@ -600,11 +616,17 @@ class ParcelFilter:
                 conn.execute(text("CREATE SCHEMA IF NOT EXISTS results"))
                 conn.commit()
             
-            # Calculate MCDA rankings using the new system
-            final_table_name, ranking_stats = self.ranker.calculate_mcda_rankings(
-                self.db_utils.engine, 
-                self.filtered_parcels_table
-            )
+            # Calculate rankings using the appropriate method
+            if self.ranking_method == "MCO":
+                final_table_name, ranking_stats = self.ranker.calculate_mco_rankings(
+                    self.db_utils.engine, 
+                    self.filtered_parcels_table
+                )
+            else:
+                final_table_name, ranking_stats = self.ranker.calculate_mcda_rankings(
+                    self.db_utils.engine, 
+                    self.filtered_parcels_table
+                )
             
             # Read the ranked results from the permanent table
             self.filtered_parcels = gpd.read_postgis(
@@ -617,7 +639,8 @@ class ParcelFilter:
             self.final_results_table = final_table_name
             
             # Log ranking statistics
-            logger.info("MCDA Ranking Statistics:")
+            method_name = self.ranking_method
+            logger.info(f"{method_name} Ranking Statistics:")
             logger.info(f"  Total parcels: {ranking_stats['total_parcels']}")
             logger.info(f"  Min score: {ranking_stats['min_score']:.2f}")
             logger.info(f"  Max score: {ranking_stats['max_score']:.2f}")
@@ -625,7 +648,7 @@ class ParcelFilter:
             logger.info(f"  Median score: {ranking_stats['median_score']:.2f}")
             logger.info(f"  Standard deviation: {ranking_stats['std_dev']:.2f}")
             
-            logger.info("Top 5 parcels by MCDA ranking:")
+            logger.info(f"Top 5 parcels by {method_name} ranking:")
             for i, parcel in enumerate(ranking_stats['top_parcels'], 1):
                 logger.info(f"  {i}. Parcel {parcel['parcelnumb']}: Score {parcel['parcel_rank_normalized']:.2f}")
                 logger.info(f"     Zoning: {parcel['zoning_type']}")
@@ -768,7 +791,8 @@ class ParcelFilter:
             'county': self.county,
             'transmission_distance': self.transmission_distance,
             'power_provider': self.power_provider,
-            'utility_filter': self.utility_filter
+            'utility_filter': self.utility_filter,
+            'ranking_method': self.ranking_method
         }
         
         # Add ranking statistics if available
@@ -817,13 +841,19 @@ class ParcelFilter:
             # Save ranked parcels to CSV
             if self.filtered_parcels is not None and not self.filtered_parcels.empty:
                 # Select key columns for the CSV
+                score_column = 'mco_score' if self.ranking_method == "MCO" else 'mcda_score'
                 csv_columns = [
-                    'parcelnumb', 'parcel_rank_normalized', 'mcda_score',
+                    'parcelnumb', 'parcel_rank_normalized', score_column,
                     'zoning_type', 'zoning_subtype', 'lbcs_site_desc',
                     'fema_nri_risk_rating', 'fema_flood_zone', 'fema_flood_zone_subtype',
-                    'gisacre', 'drive_time', 'et_distance', 'hwy_distance',
-                    'zoning_score', 'site_score', 'nri_score', 'flood_score'
+                    'gisacre', 'drive_time', 'et_distance', 'hwy_distance'
                 ]
+                
+                # Add method-specific columns
+                if self.ranking_method == "MCDA":
+                    csv_columns.extend(['zoning_score', 'site_score', 'nri_score', 'flood_score', 'size_score', 'drive_score', 'transmission_score'])
+                else:  # MCO
+                    csv_columns.extend(['size_score', 'distance_score', 'risk_score', 'zoning_score'])
                 
                 # Filter to only include columns that exist
                 available_columns = [col for col in csv_columns if col in self.filtered_parcels.columns]
@@ -847,7 +877,8 @@ class ParcelFilter:
             
             # Add ranking statistics if available
             if ranking_stats:
-                log_content.append("📊 MCDA RANKING STATISTICS:")
+                method_name = self.ranking_method
+                log_content.append(f"📊 {method_name} RANKING STATISTICS:")
                 log_content.append(f"  Total parcels: {ranking_stats.get('total_parcels', 'N/A')}")
                 log_content.append(f"  Min score: {ranking_stats.get('min_score', 'N/A'):.2f}")
                 log_content.append(f"  Max score: {ranking_stats.get('max_score', 'N/A'):.2f}")
@@ -858,7 +889,7 @@ class ParcelFilter:
                 
                 # Add top parcels
                 if 'top_parcels' in ranking_stats:
-                    log_content.append("🏆 TOP 5 PARCELS BY MCDA RANKING:")
+                    log_content.append(f"🏆 TOP 5 PARCELS BY {method_name} RANKING:")
                     for i, parcel in enumerate(ranking_stats['top_parcels'], 1):
                         log_content.append(f"  {i}. Parcel {parcel['parcelnumb']}: Score {parcel['parcel_rank_normalized']:.2f}")
                         log_content.append(f"     Zoning: {parcel.get('zoning_type', 'N/A')}")
@@ -871,16 +902,24 @@ class ParcelFilter:
             log_content.append(f"  County: {self.county.title() if self.county else 'All counties'}")
             log_content.append(f"  Transmission Distance: {self.transmission_distance} meters")
             log_content.append(f"  Power Provider: {self.utility_filter if self.utility_filter else 'All providers'}")
+            log_content.append(f"  Ranking Method: {self.ranking_method}")
             if hasattr(self, 'final_results_table') and self.final_results_table:
                 log_content.append(f"  Results Table: {self.final_results_table}")
             log_content.append("")
             
-            # Add MCDA weights
-            if self.ranker and self.ranker.weights:
-                log_content.append("⚖️ MCDA WEIGHTS:")
-                for weight_name, weight_value in self.ranker.weights.items():
-                    log_content.append(f"  {weight_name}: {weight_value}")
-                log_content.append("")
+            # Add ranking method information
+            if self.ranking_method == "MCO":
+                if self.ranker and hasattr(self.ranker, 'optimization_preferences') and self.ranker.optimization_preferences:
+                    log_content.append("⚖️ MCO OPTIMIZATION PREFERENCES:")
+                    for pref_name, pref_value in self.ranker.optimization_preferences.items():
+                        log_content.append(f"  {pref_name}: {pref_value}")
+                    log_content.append("")
+            else:
+                if self.ranker and hasattr(self.ranker, 'weights') and self.ranker.weights:
+                    log_content.append("⚖️ MCDA WEIGHTS:")
+                    for weight_name, weight_value in self.ranker.weights.items():
+                        log_content.append(f"  {weight_name}: {weight_value}")
+                    log_content.append("")
             
             # Add timestamp
             log_content.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")

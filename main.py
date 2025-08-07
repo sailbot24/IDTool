@@ -11,6 +11,7 @@ from parcel_filter.core.version import VERSION, GITHUB_REPO, check_for_updates, 
 from datetime import datetime
 import json
 from sqlalchemy import text
+from parcel_filter.core.db_utils import DatabaseManager
 
 def setup_logging():
     """Configure logging settings."""
@@ -99,26 +100,28 @@ def run_parcel_pipeline(parcel_filter, selected_provider=None, roadway_distance=
         final_count = parcel_filter.get_final_parcel_count()
         if final_count > 0:
             logger.info("=" * 60)
-            logger.info(f"🎯 FINAL RESULTS: {final_count:,} parcels identified and ranked")
+            logger.info(f"FINAL RESULTS: {final_count:,} parcels identified and ranked")
             logger.info("=" * 60)
             
             # Also print to console for better visibility
             print("\n" + "=" * 60)
-            print(f"🎯 FINAL RESULTS: {final_count:,} parcels identified and ranked")
+            print(f" FINAL RESULTS: {final_count:,} parcels identified and ranked")
             print("=" * 60)
             
             # Display summary information
             summary = parcel_filter.get_filtering_summary()
-            logger.info("📊 FILTERING SUMMARY:")
+            logger.info("FILTERING SUMMARY:")
             logger.info(f"  State: {summary['state'].upper()}")
             logger.info(f"  County: {summary['county'].title() if summary['county'] else 'All counties'}")
             logger.info(f"  Transmission Distance: {summary['transmission_distance']} meters")
             logger.info(f"  Power Provider: {summary['power_provider'] if summary['power_provider'] else 'All providers'}")
+            logger.info(f"  Ranking Method: {summary['ranking_method']}")
             logger.info(f"  Results Table: {summary['final_results_table']}")
             
-            print(f"\n📊 Summary: {summary['state'].upper()} - {summary['county'].title() if summary['county'] else 'All counties'}")
+            print(f"\n Summary: {summary['state'].upper()} - {summary['county'].title() if summary['county'] else 'All counties'}")
             print(f"   Transmission Distance: {summary['transmission_distance']} meters")
             print(f"   Power Provider: {summary['power_provider'] if summary['power_provider'] else 'All providers'}")
+            print(f"   Ranking Method: {summary['ranking_method']}")
         else:
             logger.warning("No final parcels available to count")
             print("\n WARNING: No final parcels available to count")
@@ -147,12 +150,18 @@ def main():
     parser.add_argument("--ranking-url", 
                       default='https://docs.google.com/spreadsheets/d/1nzLgafXoqqMcpherLi5jm348cX7rPtOgIDfvTVEp6us/edit?gid=843285247#gid=843285247',
                       help="URL to Google Sheets document containing ranking data")
+    parser.add_argument("--ranking-method", choices=["MCDA", "MCO"], default="MCDA",
+                      help="Ranking method to use: MCDA (Multi-Criteria Decision Analysis) or MCO (Multi-Criteria Optimization)")
     parser.add_argument("--force", action="store_true", help="Force re-run of all steps")
     parser.add_argument("--quick-view", action="store_true", help="Create and display an interactive map of the results")
     parser.add_argument("--update", action="store_true", help="Check for and install updates")
     parser.add_argument("--setup-env", action="store_true", help="Set up or repair the Python environment and exit")
     parser.add_argument("--show-graph", action="store_true", help="Show the distribution graph of parcel rankings")
+    parser.add_argument("--cleanup-results", action="store_true", help="Clean up old results tables, keeping only the 2 most recent")
     args = parser.parse_args()
+    
+    # Global database manager instance
+    db_manager = None
     
     try:
         # Set up logging
@@ -174,12 +183,69 @@ def main():
                 logger.error("Environment setup failed.")
             return
 
+        # Handle cleanup-results argument
+        if args.cleanup_results:
+            try:
+                # Load database configuration
+                with open(args.db_config, 'r') as f:
+                    db_config = {}
+                    for line in f:
+                        key, value = line.strip().split('=')
+                        db_config[key.strip()] = value.strip()
+                
+                # Create database manager and connect
+                db_manager = DatabaseManager(db_config)
+                db_manager.connect()
+                
+                # Create a temporary ParcelFilter instance for cleanup
+                temp_filter = ParcelFilter("temp", db_config=db_config, db_manager=db_manager)
+                temp_filter.db_utils.engine = db_manager.get_engine()
+                
+                # Get information about all results tables
+                logger.info("Scanning for results tables to cleanup...")
+                
+                # Get all states and counties to cleanup
+                states = temp_filter.get_available_states()
+                total_cleaned = 0
+                
+                for state in states:
+                    counties = temp_filter.get_available_counties(state)
+                    for county in counties:
+                        # Create a DatabaseUtils instance for this state/county
+                        db_utils = DatabaseUtils(state, county, db_config, db_manager)
+                        db_utils.engine = db_manager.get_engine()
+                        
+                        # Get all utility providers for this state/county
+                        providers = db_utils.get_power_providers()
+                        providers.append(None)  # Also cleanup tables with no provider filter
+                        
+                        for provider in providers:
+                            try:
+                                # Get info about tables for this combination
+                                info = db_utils.get_results_tables_info(provider)
+                                if info['total_tables'] > 2:
+                                    logger.info(f"Cleaning up {state}_{county}_{info['utility_provider']}: {info['total_tables']} tables found")
+                                    db_utils.cleanup_old_results_tables(provider, keep_count=2)
+                                    total_cleaned += info['total_tables'] - 2
+                                elif info['total_tables'] > 0:
+                                    logger.info(f"No cleanup needed for {state}_{county}_{info['utility_provider']}: {info['total_tables']} tables (keeping up to 2)")
+                            except Exception as e:
+                                logger.warning(f"Error cleaning up {state}_{county}_{provider}: {e}")
+                
+                db_manager.dispose()
+                logger.info(f"Cleanup completed. Total tables cleaned: {total_cleaned}")
+                return
+                
+            except Exception as e:
+                logger.error(f"Error during cleanup: {e}")
+                return
+
         # Ensure environment is set up
         if not ensure_environment():
             logger.error("Failed to ensure environment. Please check the logs for details.")
             return
 
-        # Load database configuration
+        # Load database configuration and establish connection immediately
         try:
             with open(args.db_config, 'r') as f:
                 db_config = {}
@@ -188,165 +254,177 @@ def main():
                     db_config[key.strip()] = value.strip()
             logger.info(f"Using database configuration from {args.db_config}")
             
-            # Create a temporary ParcelFilter instance to get available states and counties
+            # Create and establish database connection early
+            db_manager = DatabaseManager(db_config)
+            db_manager.connect()
+            logger.info("Database connection established successfully - ready for user input")
+            
+            # Create a temporary ParcelFilter instance with the established connection
             temp_filter = ParcelFilter(
                 state="temp",  # Temporary state for connection
                 db_config=db_config,
                 ranking_url=args.ranking_url,
-                transmission_distance=args.transmission_distance
+                transmission_distance=args.transmission_distance,
+                ranking_method=args.ranking_method
             )
+            # Use the established database connection
+            temp_filter.db_utils.db_manager = db_manager
+            temp_filter.db_utils.engine = db_manager.get_engine()
             
-            with temp_filter:
-                # Get available states
-                available_states = temp_filter.get_available_states()
+            # Get available states using the established connection
+            available_states = temp_filter.get_available_states()
+            
+            if not available_states:
+                logger.error("No states found in the database")
+                return
+            
+            # State selection
+            selected_state = args.state
+            if not selected_state:
+                print("\nAvailable states:")
+                for i, state in enumerate(available_states, 1):
+                    print(f"{i}. {state.upper()}")
                 
-                if not available_states:
-                    logger.error("No states found in the database")
+                while True:
+                    try:
+                        choice = int(input("\nSelect a state (enter number): "))
+                        if 1 <= choice <= len(available_states):
+                            selected_state = available_states[choice - 1]
+                            break
+                        print("Invalid selection. Please try again.")
+                    except ValueError:
+                        print("Please enter a number.")
+            else:
+                selected_state = selected_state.lower()
+                if selected_state not in available_states:
+                    logger.error(f"State '{selected_state}' not found in available states: {available_states}")
                     return
+            
+            logger.info(f"Selected state: {selected_state}")
+            
+            # Get available counties for the selected state
+            available_counties = temp_filter.get_available_counties(selected_state)
+            
+            if not available_counties:
+                logger.error(f"No counties found for state {selected_state}")
+                return
+            
+            # County selection
+            selected_county = args.county
+            if not selected_county:
+                print(f"\nAvailable counties for {selected_state.upper()}:")
+                for i, county in enumerate(available_counties, 1):
+                    print(f"{i}. {county.title()}")
+                print("0. All counties in state")
                 
-                # State selection
-                selected_state = args.state
-                if not selected_state:
-                    print("\nAvailable states:")
-                    for i, state in enumerate(available_states, 1):
-                        print(f"{i}. {state.upper()}")
-                    
-                    while True:
-                        try:
-                            choice = int(input("\nSelect a state (enter number): "))
-                            if 1 <= choice <= len(available_states):
-                                selected_state = available_states[choice - 1]
-                                break
-                            print("Invalid selection. Please try again.")
-                        except ValueError:
-                            print("Please enter a number.")
-                else:
-                    selected_state = selected_state.lower()
-                    if selected_state not in available_states:
-                        logger.error(f"State '{selected_state}' not found in available states: {available_states}")
-                        return
-                
-                logger.info(f"Selected state: {selected_state}")
-                
-                # Get available counties for the selected state
-                available_counties = temp_filter.get_available_counties(selected_state)
-                
-                if not available_counties:
-                    logger.error(f"No counties found for state {selected_state}")
+                while True:
+                    try:
+                        choice = int(input("\nSelect a county (enter number): "))
+                        if 0 <= choice <= len(available_counties):
+                            selected_county = None if choice == 0 else available_counties[choice - 1]
+                            break
+                        print("Invalid selection. Please try again.")
+                    except ValueError:
+                        print("Please enter a number.")
+            else:
+                selected_county = selected_county.lower()
+                if selected_county not in available_counties:
+                    logger.error(f"County '{selected_county}' not found in available counties for state {selected_state}: {available_counties}")
                     return
-                
-                # County selection
-                selected_county = args.county
-                if not selected_county:
-                    print(f"\nAvailable counties for {selected_state.upper()}:")
-                    for i, county in enumerate(available_counties, 1):
-                        print(f"{i}. {county.title()}")
-                    print("0. All counties in state")
-                    
-                    while True:
-                        try:
-                            choice = int(input("\nSelect a county (enter number): "))
-                            if 0 <= choice <= len(available_counties):
-                                selected_county = None if choice == 0 else available_counties[choice - 1]
-                                break
-                            print("Invalid selection. Please try again.")
-                        except ValueError:
-                            print("Please enter a number.")
-                else:
-                    selected_county = selected_county.lower()
-                    if selected_county not in available_counties:
-                        logger.error(f"County '{selected_county}' not found in available counties for state {selected_state}: {available_counties}")
-                        return
-                
-                logger.info(f"Selected county: {selected_county if selected_county else 'All counties'}")
+            
+            logger.info(f"Selected county: {selected_county if selected_county else 'All counties'}")
             
             # Now create the actual ParcelFilter instance with selected state and county
+            # but reuse the existing database connection
             parcel_filter = ParcelFilter(
                 state=selected_state,
                 county=selected_county,
                 db_config=db_config,
                 ranking_url=args.ranking_url,
-                transmission_distance=args.transmission_distance
+                transmission_distance=args.transmission_distance,
+                ranking_method=args.ranking_method
             )
+            # Reuse the established database connection
+            parcel_filter.db_utils.db_manager = db_manager
+            parcel_filter.db_utils.engine = db_manager.get_engine()
             
-            with parcel_filter:
-                # Get list of power providers
-                providers = parcel_filter.get_power_providers()
+            # Get list of power providers
+            providers = parcel_filter.get_power_providers()
+            
+            if not providers:
+                logger.error("No power providers found in the data")
+                return
                 
-                if not providers:
-                    logger.error("No power providers found in the data")
-                    return
+            # Display available providers
+            print("\nAvailable power providers:")
+            for i, provider in enumerate(providers, 1):
+                print(f"{i}. {provider}")
+            print("0. No provider filter (include all parcels)")
+            
+            # Get user selection
+            while True:
+                try:
+                    choice = int(input("\nSelect a power provider (enter number): "))
+                    if 0 <= choice <= len(providers):
+                        break
+                    print("Invalid selection. Please try again.")
+                except ValueError:
+                    print("Please enter a number.")
+            
+            selected_provider = None if choice == 0 else providers[choice - 1]
+            logger.info(f"Selected power provider: {selected_provider if selected_provider else 'None'}")
+            
+            # Run the pipeline
+            if run_parcel_pipeline(parcel_filter, selected_provider, args.roadway_distance):
+                # Show quick view if requested
+                if args.quick_view:
+                    # Create results directory
+                    results_dir = Path("results")
+                    results_dir.mkdir(exist_ok=True)
                     
-                # Display available providers
-                print("\nAvailable power providers:")
-                for i, provider in enumerate(providers, 1):
-                    print(f"{i}. {provider}")
-                print("0. No provider filter (include all parcels)")
-                
-                # Get user selection
-                while True:
-                    try:
-                        choice = int(input("\nSelect a power provider (enter number): "))
-                        if 0 <= choice <= len(providers):
-                            break
-                        print("Invalid selection. Please try again.")
-                    except ValueError:
-                        print("Please enter a number.")
-                
-                selected_provider = None if choice == 0 else providers[choice - 1]
-                logger.info(f"Selected power provider: {selected_provider if selected_provider else 'None'}")
-                
-                # Run the pipeline
-                if run_parcel_pipeline(parcel_filter, selected_provider, args.roadway_distance):
-                    # Show quick view if requested
-                    if args.quick_view:
-                        # Create results directory
-                        results_dir = Path("results")
-                        results_dir.mkdir(exist_ok=True)
+                    # Create timestamp for the output directory
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    # Sanitize provider name for file system
+                    if selected_provider:
+                        # Convert to lowercase and replace spaces with underscores
+                        provider_name = selected_provider.lower().replace(' ', '_')
+                        # Remove or replace invalid file system characters
+                        import re
+                        provider_name = re.sub(r'[^a-z0-9_]', '', provider_name)
+                        # Ensure it doesn't start with a number
+                        if provider_name and provider_name[0].isdigit():
+                            provider_name = 'provider_' + provider_name
+                        # Ensure it's not empty
+                        if not provider_name:
+                            provider_name = 'unknown_provider'
+                    else:
+                        provider_name = 'all_providers'
+                    output_dir = results_dir / f"{parcel_filter.state}_{parcel_filter.county}_{provider_name}_{timestamp}"
+                    output_dir.mkdir(exist_ok=True)
+                    
+                    # Load ranked parcels directly from the database
+                    final_table = parcel_filter.get_final_results_table()
+                    if final_table:
+                        logger.info(f"Loading ranked parcels from database table: {final_table}")
+                        ranked_parcels = gpd.read_postgis(
+                            f"SELECT * FROM {final_table}",
+                            parcel_filter.db_utils.engine,
+                            geom_col='geom'
+                        )
                         
-                        # Create timestamp for the output directory
-                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                        # Sanitize provider name for file system
-                        if selected_provider:
-                            # Convert to lowercase and replace spaces with underscores
-                            provider_name = selected_provider.lower().replace(' ', '_')
-                            # Remove or replace invalid file system characters
-                            import re
-                            provider_name = re.sub(r'[^a-z0-9_]', '', provider_name)
-                            # Ensure it doesn't start with a number
-                            if provider_name and provider_name[0].isdigit():
-                                provider_name = 'provider_' + provider_name
-                            # Ensure it's not empty
-                            if not provider_name:
-                                provider_name = 'unknown_provider'
-                        else:
-                            provider_name = 'all_providers'
-                        output_dir = results_dir / f"{parcel_filter.state}_{parcel_filter.county}_{provider_name}_{timestamp}"
-                        output_dir.mkdir(exist_ok=True)
-                        
-                        # Load ranked parcels directly from the database
-                        final_table = parcel_filter.get_final_results_table()
-                        if final_table:
-                            logger.info(f"Loading ranked parcels from database table: {final_table}")
-                            ranked_parcels = gpd.read_postgis(
-                                f"SELECT * FROM {final_table}",
-                                parcel_filter.db_utils.engine,
-                                geom_col='geom'
-                            )
-                            
-                            # Create and display the interactive map
-                            create_parcel_map(
-                                ranked_parcels,
-                                selected_state,
-                                selected_county if selected_county else "all_counties",
-                                output_dir,
-                                db_connection=parcel_filter.db_utils.engine
-                            )
-                        else:
-                            logger.error("No final results table found. Cannot create quick view.")
-                else:
-                    logger.error("Pipeline failed. Check the logs for details.")
-                
+                        # Create and display the interactive map
+                        create_parcel_map(
+                            ranked_parcels,
+                            selected_state,
+                            selected_county if selected_county else "all_counties",
+                            output_dir,
+                            db_connection=parcel_filter.db_utils.engine
+                        )
+                    else:
+                        logger.error("No final results table found. Cannot create quick view.")
+            else:
+                logger.error("Pipeline failed. Check the logs for details.")
+            
         except Exception as e:
             logger.error(f"Error processing parcels: {str(e)}")
             raise
@@ -356,8 +434,8 @@ def main():
         raise
     finally:
         # Ensure connection is closed
-        if 'parcel_filter' in locals() and parcel_filter.db_utils.engine is not None:
-            parcel_filter.db_utils.engine.dispose()
+        if db_manager is not None:
+            db_manager.dispose()
 
 if __name__ == '__main__':
     main() 

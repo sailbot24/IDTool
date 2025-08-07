@@ -9,17 +9,17 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-class MCDARanker:
+class MCORanker:
     """
-    Multi-Criteria Decision Analysis (MCDA) ranking system for parcels.
+    Multi-Criteria Optimization (MCO) ranking system for parcels.
     
-    This class implements a proper MCDA approach using PostGIS for efficient
-    spatial data processing and ranking calculations.
+    This class implements an MCO approach using PostGIS for efficient
+    spatial data processing and optimization-based ranking calculations.
     """
     
     def __init__(self, ranking_url: str, state: str, county: str, utility_provider: Optional[str] = None):
         """
-        Initialize the MCDA ranker with ranking data from Google Sheets.
+        Initialize the MCO ranker with ranking data from Google Sheets.
         
         Args:
             ranking_url: URL to the Google Sheets document containing ranking data
@@ -29,7 +29,7 @@ class MCDARanker:
         """
         self.ranking_url = ranking_url
         self.ranking_data = None
-        self.weights = None
+        self.optimization_preferences = None
         self.state = state.lower()
         self.county = county.lower() if county else None
         
@@ -71,7 +71,7 @@ class MCDARanker:
     
     def load_ranking_data(self) -> None:
         """
-        Load ranking data and weights from Google Sheets.
+        Load ranking data and optimization preferences from Google Sheets.
         
         Raises:
             ValueError: If the Google Sheets URL is invalid
@@ -86,18 +86,18 @@ class MCDARanker:
                 ranking_url = f"https://docs.google.com/spreadsheets/d/{doc_id}/gviz/tq?tqx=out:csv&gid=843285247"
                 self.ranking_data = pd.read_csv(ranking_url)
                 
-                # Load weights (sheet gid=1862912750)
-                weights_url = f"https://docs.google.com/spreadsheets/d/{doc_id}/gviz/tq?tqx=out:csv&gid=1862912750"
-                weights_df = pd.read_csv(weights_url)
+                # Load optimization preferences (sheet gid=956321594)
+                optimization_url = f"https://docs.google.com/spreadsheets/d/{doc_id}/gviz/tq?tqx=out:csv&gid=956321594"
+                optimization_df = pd.read_csv(optimization_url)
                 
-                # Create weights dictionary from the first two columns
-                self.weights = dict(zip(weights_df.iloc[:, 0], weights_df.iloc[:, 1]))
+                # Create optimization preferences dictionary from the first two columns
+                self.optimization_preferences = dict(zip(optimization_df.iloc[:, 0], optimization_df.iloc[:, 1]))
                 
                 # Validate the loaded data
                 self._validate_ranking_data()
                 
                 logger.info(f"Successfully loaded ranking data with {len(self.ranking_data)} rows")
-                logger.info(f"Loaded weights: {self.weights}")
+                logger.info(f"Loaded optimization preferences: {self.optimization_preferences}")
             else:
                 raise ValueError("Invalid Google Sheets URL")
         except Exception as e:
@@ -111,7 +111,7 @@ class MCDARanker:
         Raises:
             ValueError: If validation fails
         """
-        # Required columns for ranking data (updated for new structure)
+        # Required columns for ranking data (same as MCDA)
         required_columns = [
             'zoning_type', 'zoning_subtype', 'lbcs_site_desc', 
             'fema_nri_risk_rating', 'fema_flood_zone', 'fema_flood_zone_subtype',
@@ -124,16 +124,19 @@ class MCDARanker:
         if missing_cols:
             raise ValueError(f"Missing required columns in ranking data: {missing_cols}")
         
-        # Validate weights (updated for new structure with physical characteristics)
-        required_weights = ['zoning', 'description', 'fema_nri', 'flood', 'size', 'drive', 'transmission']
-        missing_weights = [w for w in required_weights if w not in self.weights]
-        if missing_weights:
-            raise ValueError(f"Missing required weights: {missing_weights}")
+        # Validate optimization preferences
+        required_preferences = ['size', 'distance', 'risk', 'zoning']
+        missing_preferences = [p for p in required_preferences if p not in self.optimization_preferences]
+        if missing_preferences:
+            raise ValueError(f"Missing required optimization preferences: {missing_preferences}")
         
-        # Validate weight values are positive
-        for weight_name, weight_value in self.weights.items():
-            if not isinstance(weight_value, (int, float)) or weight_value < 0:
-                raise ValueError(f"Weight '{weight_name}' must be a positive number, got: {weight_value}")
+        # Validate preference values are 'min' or 'max' (case-insensitive)
+        for pref_name, pref_value in self.optimization_preferences.items():
+            pref_value_str = str(pref_value).strip().lower()
+            if pref_value_str not in ['min', 'max']:
+                raise ValueError(f"Optimization preference '{pref_name}' must be 'min' or 'max', got: {pref_value}")
+            # Normalize to lowercase for consistency
+            self.optimization_preferences[pref_name] = pref_value_str
     
     def create_ranking_tables(self, conn) -> None:
         """
@@ -230,9 +233,9 @@ class MCDARanker:
                      fema_nri_ranking, flood_zone_ranking, flood_subtype_ranking);
             """))
     
-    def calculate_mcda_rankings(self, engine, filtered_parcels_table: str) -> Tuple[str, Dict]:
+    def calculate_mco_rankings(self, engine, filtered_parcels_table: str) -> Tuple[str, Dict]:
         """
-        Calculate MCDA rankings for parcels using PostGIS.
+        Calculate MCO rankings for parcels using PostGIS.
         
         Args:
             engine: SQLAlchemy engine for database connection
@@ -249,20 +252,20 @@ class MCDARanker:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             final_table_name = f"results.{self.state}_{self.county}_{self.utility_provider}_{timestamp}"
             
-            # Execute the MCDA ranking calculation
-            self._execute_mcda_calculation(conn, filtered_parcels_table, final_table_name)
+            # Execute the MCO ranking calculation
+            self._execute_mco_calculation(conn, filtered_parcels_table, final_table_name)
             
             # Get ranking statistics
             ranking_stats = self._get_ranking_statistics(conn, final_table_name)
             
             conn.commit()
             
-            logger.info(f"Created MCDA ranking table: {final_table_name}")
+            logger.info(f"Created MCO ranking table: {final_table_name}")
             return final_table_name, ranking_stats
     
-    def _execute_mcda_calculation(self, conn, filtered_parcels_table: str, final_table_name: str) -> None:
+    def _execute_mco_calculation(self, conn, filtered_parcels_table: str, final_table_name: str) -> None:
         """
-        Execute the MCDA calculation using proper normalization and weighting.
+        Execute the MCO calculation using optimization criteria.
         
         Args:
             conn: Database connection
@@ -281,14 +284,20 @@ class MCDARanker:
                 CREATE TABLE {final_table_name} AS
                 SELECT 
                     p.*,
-                    5.0 as mcda_score,
+                    5.0 as mco_score,
                     5.0 as parcel_rank_normalized
                 FROM {filtered_parcels_table} p
             """))
             logger.warning(f"Only 1 parcel found. Assigned default score of 5.0.")
             return
         
-        # Create the MCDA calculation with proper normalization (for multiple parcels)
+        # Get optimization preferences
+        size_pref = self.optimization_preferences.get('size', 'max').lower()
+        distance_pref = self.optimization_preferences.get('distance', 'min').lower()
+        risk_pref = self.optimization_preferences.get('risk', 'min').lower()
+        zoning_pref = self.optimization_preferences.get('zoning', 'max').lower()
+        
+        # Create the MCO calculation with optimization criteria
         conn.execute(text(f"""
             CREATE TABLE {final_table_name} AS
             WITH normalized_criteria AS (
@@ -318,11 +327,13 @@ class MCDARanker:
                                  (MAX(p.drive_time) OVER () - MIN(p.drive_time) OVER ()) * 10)
                     END as drive_time_norm,
                     
-                    -- Calculate building coverage percentage (inverted - less building is better)
+                    -- Normalize highway distance (0-10 range, shorter is better)
                     CASE 
-                        WHEN p.ll_gissqft = 0 OR p.ll_gissqft IS NULL THEN 5
-                        ELSE LEAST(10, GREATEST(0, 10 - (p.ll_bldg_footprint_sqft / p.ll_gissqft * 10)))
-                    END as building_coverage_norm
+                        WHEN p.hwy_distance IS NULL THEN 5
+                        WHEN MIN(p.hwy_distance) OVER () = MAX(p.hwy_distance) OVER () THEN 5
+                        ELSE 10 - ((p.hwy_distance - MIN(p.hwy_distance) OVER ()) / 
+                                 (MAX(p.hwy_distance) OVER () - MIN(p.hwy_distance) OVER ()) * 10)
+                    END as highway_distance_norm
                 FROM {filtered_parcels_table} p
             ),
             mapped_rankings AS (
@@ -350,48 +361,114 @@ class MCDARanker:
                     AND n.fema_flood_zone = f.fema_flood_zone
                     AND n.fema_flood_zone_subtype = f.fema_flood_zone_subtype
             ),
-            mcda_scores AS (
+            optimization_criteria AS (
                 SELECT 
                     *,
-                    -- Calculate MCDA composite scores for each criterion group
-                    -- Zoning criterion (mean of type and subtype)
-                    {self.weights['zoning']} * (zoning_ranking + zoning_subtype_ranking) / 2 as zoning_score,
+                    -- Size criterion (use gisacre_norm)
+                    CASE WHEN '{size_pref}' = 'max' THEN gisacre_norm ELSE 10 - gisacre_norm END as size_score,
                     
-                    -- Site Description criterion (description weight)
-                    {self.weights['description']} * site_ranking as site_score,
+                    -- Distance criterion (average of drive_time_norm, highway_distance_norm, transmission_distance_norm)
+                    (drive_time_norm + highway_distance_norm + transmission_distance_norm) / 3 as distance_score,
                     
-                    -- NRI Risk criterion (fema_nri weight)
-                    {self.weights['fema_nri']} * fema_nri_ranking as nri_score,
+                    -- Risk criterion (inverse of combined NRI and flood scores from MCDA)
+                    10 - ((fema_nri_ranking + flood_zone_ranking + flood_subtype_ranking) / 3) as risk_score,
                     
-                    -- Flood criterion (flood weight)
-                    {self.weights['flood']} * (flood_zone_ranking + flood_subtype_ranking) as flood_score,
-                    
-                    -- Physical characteristics criteria
-                    -- Size criterion (size weight)
-                    {self.weights['size']} * gisacre_norm as size_score,
-                    
-                    -- Drive time criterion (drive weight, inverted - shorter is better)
-                    {self.weights['drive']} * drive_time_norm as drive_score,
-                    
-                    -- Transmission distance criterion (transmission weight, inverted - closer is better)
-                    {self.weights['transmission']} * transmission_distance_norm as transmission_score
+                    -- Zoning criterion (use zoning_score from MCDA)
+                    (zoning_ranking + zoning_subtype_ranking) / 2 as zoning_score
                 FROM mapped_rankings
             )
             SELECT 
                 *,
-                -- Calculate final MCDA score (including physical characteristics)
-                zoning_score + site_score + nri_score + flood_score + size_score + drive_score + transmission_score as mcda_score,
+                -- Calculate final MCO score based on optimization preferences
+                CASE 
+                    WHEN '{size_pref}' = 'max' THEN size_score ELSE 10 - size_score
+                END + 
+                CASE 
+                    WHEN '{distance_pref}' = 'min' THEN distance_score ELSE 10 - distance_score
+                END + 
+                CASE 
+                    WHEN '{risk_pref}' = 'min' THEN risk_score ELSE 10 - risk_score
+                END + 
+                CASE 
+                    WHEN '{zoning_pref}' = 'max' THEN zoning_score ELSE 10 - zoning_score
+                END as mco_score,
                 
                 -- Normalize final score to 0-10 range
                 CASE 
-                    WHEN MIN(zoning_score + site_score + nri_score + flood_score + size_score + drive_score + transmission_score) OVER () = 
-                         MAX(zoning_score + site_score + nri_score + flood_score + size_score + drive_score + transmission_score) OVER () THEN 5
-                    ELSE (zoning_score + site_score + nri_score + flood_score + size_score + drive_score + transmission_score - 
-                          MIN(zoning_score + site_score + nri_score + flood_score + size_score + drive_score + transmission_score) OVER ()) / 
-                         (MAX(zoning_score + site_score + nri_score + flood_score + size_score + drive_score + transmission_score) OVER () - 
-                          MIN(zoning_score + site_score + nri_score + flood_score + size_score + drive_score + transmission_score) OVER ()) * 10
+                    WHEN MIN(CASE 
+                        WHEN '{size_pref}' = 'max' THEN size_score ELSE 10 - size_score
+                    END + 
+                    CASE 
+                        WHEN '{distance_pref}' = 'min' THEN distance_score ELSE 10 - distance_score
+                    END + 
+                    CASE 
+                        WHEN '{risk_pref}' = 'min' THEN risk_score ELSE 10 - risk_score
+                    END + 
+                    CASE 
+                        WHEN '{zoning_pref}' = 'max' THEN zoning_score ELSE 10 - zoning_score
+                    END) OVER () = 
+                    MAX(CASE 
+                        WHEN '{size_pref}' = 'max' THEN size_score ELSE 10 - size_score
+                    END + 
+                    CASE 
+                        WHEN '{distance_pref}' = 'min' THEN distance_score ELSE 10 - distance_score
+                    END + 
+                    CASE 
+                        WHEN '{risk_pref}' = 'min' THEN risk_score ELSE 10 - risk_score
+                    END + 
+                    CASE 
+                        WHEN '{zoning_pref}' = 'max' THEN zoning_score ELSE 10 - zoning_score
+                    END) OVER () THEN 5
+                    ELSE (CASE 
+                        WHEN '{size_pref}' = 'max' THEN size_score ELSE 10 - size_score
+                    END + 
+                    CASE 
+                        WHEN '{distance_pref}' = 'min' THEN distance_score ELSE 10 - distance_score
+                    END + 
+                    CASE 
+                        WHEN '{risk_pref}' = 'min' THEN risk_score ELSE 10 - risk_score
+                    END + 
+                    CASE 
+                        WHEN '{zoning_pref}' = 'max' THEN zoning_score ELSE 10 - zoning_score
+                    END - 
+                    MIN(CASE 
+                        WHEN '{size_pref}' = 'max' THEN size_score ELSE 10 - size_score
+                    END + 
+                    CASE 
+                        WHEN '{distance_pref}' = 'min' THEN distance_score ELSE 10 - distance_score
+                    END + 
+                    CASE 
+                        WHEN '{risk_pref}' = 'min' THEN risk_score ELSE 10 - risk_score
+                    END + 
+                    CASE 
+                        WHEN '{zoning_pref}' = 'max' THEN zoning_score ELSE 10 - zoning_score
+                    END) OVER ()) / 
+                    (MAX(CASE 
+                        WHEN '{size_pref}' = 'max' THEN size_score ELSE 10 - size_score
+                    END + 
+                    CASE 
+                        WHEN '{distance_pref}' = 'min' THEN distance_score ELSE 10 - distance_score
+                    END + 
+                    CASE 
+                        WHEN '{risk_pref}' = 'min' THEN risk_score ELSE 10 - risk_score
+                    END + 
+                    CASE 
+                        WHEN '{zoning_pref}' = 'max' THEN zoning_score ELSE 10 - zoning_score
+                    END) OVER () - 
+                    MIN(CASE 
+                        WHEN '{size_pref}' = 'max' THEN size_score ELSE 10 - size_score
+                    END + 
+                    CASE 
+                        WHEN '{distance_pref}' = 'min' THEN distance_score ELSE 10 - distance_score
+                    END + 
+                    CASE 
+                        WHEN '{risk_pref}' = 'min' THEN risk_score ELSE 10 - risk_score
+                    END + 
+                    CASE 
+                        WHEN '{zoning_pref}' = 'max' THEN zoning_score ELSE 10 - zoning_score
+                    END) OVER ()) * 10
                 END as parcel_rank_normalized
-            FROM mcda_scores
+            FROM optimization_criteria
             ORDER BY parcel_rank_normalized DESC
         """))
         
