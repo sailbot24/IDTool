@@ -155,6 +155,7 @@ python main.py \
   --min-size 50.0 \
   --transmission-distance 100.0 \
   --roadway-distance 500.0 \
+  --min-kv 69.0 \
   --quick-view \
   --show-graph
 ```
@@ -169,6 +170,7 @@ python main.py \
 | `--min-size` | Minimum parcel size in acres | `50.0` |
 | `--transmission-distance` | Max distance to transmission lines (meters) | `100.0` |
 | `--roadway-distance` | Max distance to roadway in meters | Interactive prompt |
+| `--min-kv` | Minimum KV value to filter by | Interactive prompt |
 | `--provider` | Power utility provider to filter by | Interactive selection |
 | `--ranking-url` | Google Sheets URL for ranking data | Default URL |
 | `--quick-view` | Create interactive map | False |
@@ -184,6 +186,7 @@ The tool follows a 6-step pipeline:
 2. **Apply Filters**: 
    - Filter out parcels intersecting airports
    - Filter by transmission line distance
+   - Filter by minimum KV value (if enabled)
    - Filter by roadway distance (if enabled)
    - Filter by utility provider (if selected)
 3. **Calculate Drive Times**: Use isochrone data to calculate drive times

@@ -25,7 +25,8 @@ class ParcelFilter:
                  data_dir: str = "",
                  transmission_distance: float = 100.0,
                  ranking_method: str = "MCDA",
-                 db_manager: Optional['DatabaseManager'] = None):
+                 db_manager: Optional['DatabaseManager'] = None,
+                 min_kv: Optional[float] = None):
         """
         Initialize ParcelFilter with PostgreSQL connection.
         
@@ -71,6 +72,7 @@ class ParcelFilter:
         self.utility_filter = None
         self.data_dir = data_dir
         self.transmission_distance = transmission_distance
+        self.min_kv = min_kv
         self.filtered_parcels_table = None
         self.ranking_data = None
         self.weights = None
@@ -427,6 +429,88 @@ class ParcelFilter:
                 
         except Exception as e:
             logger.error(f"Error filtering parcels by roadway distance: {e}")
+            raise
+
+    def filter_min_kv(self, min_kv: Optional[float] = None) -> None:
+        """Filter parcels by minimum KV value from the et_kv column.
+        
+        Args:
+            min_kv: Minimum KV value. If None, will prompt user for input.
+        """
+        # First check if et_kv column exists
+        try:
+            with self.db_utils.engine.connect() as conn:
+                # Check if et_kv column exists in the current filtered table
+                result = conn.execute(text(f"""
+                    SELECT column_name 
+                    FROM information_schema.columns 
+                    WHERE table_name = '{self.filtered_parcels_table}' 
+                    AND column_name = 'et_kv'
+                """))
+                
+                if not result.fetchone():
+                    logger.warning("et_kv column not found in the data. Skipping KV filter.")
+                    return
+                    
+        except Exception as e:
+            logger.error(f"Error checking for et_kv column: {e}")
+            return
+        
+        if min_kv is None:
+            # Prompt user for KV filter
+            print("\nMinimum KV Filter")
+            print("Do you want to filter parcels by minimum KV value?")
+            while True:
+                choice = input("Enter 'y' for yes or 'n' for no: ").lower().strip()
+                if choice in ['y', 'n']:
+                    break
+                print("Please enter 'y' or 'n'.")
+            
+            if choice == 'n':
+                logger.info("KV filter skipped by user")
+                return
+            
+            # Prompt for minimum KV value
+            while True:
+                try:
+                    kv_input = input("Enter minimum KV value: ")
+                    min_kv = float(kv_input)
+                    if min_kv >= 0:
+                        break
+                    print("KV value must be greater than or equal to 0.")
+                except ValueError:
+                    print("Please enter a valid number.")
+        
+        logger.info(f"Filtering parcels based on minimum KV: {min_kv}")
+        
+        try:
+            with self.db_utils.engine.connect() as conn:
+                # Create filtered parcels table using PostGIS with a unique name
+                temp_table = f"parcels_filtered_kv_{int(time.time())}"
+                sql = f"""
+                CREATE TEMP TABLE {temp_table} AS
+                SELECT p.*
+                FROM {self.filtered_parcels_table} p
+                WHERE p.et_kv IS NOT NULL 
+                AND p.et_kv != ''
+                AND CAST(p.et_kv AS NUMERIC) >= {min_kv};
+                """
+                
+                # Execute the SQL
+                conn.execute(text(sql))
+                conn.commit()
+                
+                # Get count of filtered parcels
+                result = conn.execute(text(f"SELECT COUNT(*) FROM {temp_table}"))
+                count = result.scalar()
+                logger.info(f"Created temporary {temp_table} with {count} rows")
+                
+                # Update the filtered parcels table name
+                self.filtered_parcels_table = temp_table
+                logger.info(f"Parcel count after KV filtering: {count}")
+                
+        except Exception as e:
+            logger.error(f"Error filtering parcels by minimum KV: {e}")
             raise
 
     def cleanup(self) -> None:
@@ -792,7 +876,8 @@ class ParcelFilter:
             'transmission_distance': self.transmission_distance,
             'power_provider': self.power_provider,
             'utility_filter': self.utility_filter,
-            'ranking_method': self.ranking_method
+            'ranking_method': self.ranking_method,
+            'min_kv': self.min_kv
         }
         
         # Add ranking statistics if available

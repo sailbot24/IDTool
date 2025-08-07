@@ -52,13 +52,14 @@ def read_db_config(config_path):
         logging.error(f"Error reading database configuration: {e}")
         raise
 
-def run_parcel_pipeline(parcel_filter, selected_provider=None, roadway_distance=None):
+def run_parcel_pipeline(parcel_filter, selected_provider=None, roadway_distance=None, min_kv=None):
     """Run the complete parcel filtering and ranking pipeline in the correct order.
     
     Args:
         parcel_filter: ParcelFilter instance
         selected_provider: Optional power provider to filter by
         roadway_distance: Optional maximum distance to roadway in meters
+        min_kv: Optional minimum KV value to filter by
         
     Returns:
         bool: True if pipeline completed successfully, False otherwise
@@ -74,7 +75,8 @@ def run_parcel_pipeline(parcel_filter, selected_provider=None, roadway_distance=
         logger.info("Step 2: Applying filters...")
         parcel_filter.filter_airports()
         parcel_filter.filter_transmission_lines()
-        parcel_filter.filter_roadway_distance(roadway_distance)  # New roadway distance filter
+        parcel_filter.filter_min_kv(min_kv)  # KV filter right after transmission lines
+        parcel_filter.filter_roadway_distance(roadway_distance)  # Roadway distance filter
         if selected_provider:
             parcel_filter.filter_power_provider(selected_provider)
             # Set the utility filter for table naming
@@ -115,12 +117,14 @@ def run_parcel_pipeline(parcel_filter, selected_provider=None, roadway_distance=
             logger.info(f"  County: {summary['county'].title() if summary['county'] else 'All counties'}")
             logger.info(f"  Transmission Distance: {summary['transmission_distance']} meters")
             logger.info(f"  Power Provider: {summary['power_provider'] if summary['power_provider'] else 'All providers'}")
+            logger.info(f"  Min KV: {summary['min_kv'] if summary['min_kv'] else 'No filter'}")
             logger.info(f"  Ranking Method: {summary['ranking_method']}")
             logger.info(f"  Results Table: {summary['final_results_table']}")
             
             print(f"\n Summary: {summary['state'].upper()} - {summary['county'].title() if summary['county'] else 'All counties'}")
             print(f"   Transmission Distance: {summary['transmission_distance']} meters")
             print(f"   Power Provider: {summary['power_provider'] if summary['power_provider'] else 'All providers'}")
+            print(f"   Min KV: {summary['min_kv'] if summary['min_kv'] else 'No filter'}")
             print(f"   Ranking Method: {summary['ranking_method']}")
         else:
             logger.warning("No final parcels available to count")
@@ -145,6 +149,8 @@ def main():
                       help="Maximum distance to transmission lines in meters")
     parser.add_argument("--roadway-distance", type=float,
                       help="Maximum distance to roadway in meters (if not provided, will prompt user)")
+    parser.add_argument("--min-kv", type=float,
+                      help="Minimum KV value to filter by (if not provided, will prompt user)")
     parser.add_argument("--provider", type=str,
                       help="Power utility provider to filter by")
     parser.add_argument("--ranking-url", 
@@ -342,7 +348,8 @@ def main():
                 db_config=db_config,
                 ranking_url=args.ranking_url,
                 transmission_distance=args.transmission_distance,
-                ranking_method=args.ranking_method
+                ranking_method=args.ranking_method,
+                min_kv=args.min_kv
             )
             # Reuse the established database connection
             parcel_filter.db_utils.db_manager = db_manager
@@ -375,7 +382,7 @@ def main():
             logger.info(f"Selected power provider: {selected_provider if selected_provider else 'None'}")
             
             # Run the pipeline
-            if run_parcel_pipeline(parcel_filter, selected_provider, args.roadway_distance):
+            if run_parcel_pipeline(parcel_filter, selected_provider, args.roadway_distance, args.min_kv):
                 # Show quick view if requested
                 if args.quick_view:
                     # Create results directory

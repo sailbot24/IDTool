@@ -1,6 +1,85 @@
-2025-08-07 14:28:07,010 - parcel_filter.core.db_utils - INFO - Database connection established successfully
-2025-08-07 14:28:07,011 - __main__ - INFO - Scanning for results tables to cleanup...
-2025-08-07 14:28:07,062 - parcel_filter.core.filter - INFO - Found 2 available states: ['az', 'co']
-2025-08-07 14:28:07,063 - parcel_filter.core.filter - INFO - Found 1 available counties for state az: ['maricopa']
-2025-08-07 14:28:07,063 - __main__ - ERROR - Error during cleanup: name 'DatabaseUtils' is not defined
-2025-08-07 14:28:07,063 - parcel_filter.core.db_utils - INFO - Database connection closed
+2025-08-07 15:56:33,824 - root - INFO - Virtual environment already exists. Skipping setup.
+2025-08-07 15:56:33,824 - __main__ - INFO - Using database configuration from db_config.txt
+2025-08-07 15:56:33,826 - parcel_filter.core.db_utils - INFO - Database connection established successfully
+2025-08-07 15:56:33,826 - __main__ - INFO - Database connection established successfully - ready for user input
+2025-08-07 15:56:33,876 - parcel_filter.core.filter - INFO - Found 2 available states: ['az', 'co']
+2025-08-07 15:56:35,063 - __main__ - INFO - Selected state: az
+2025-08-07 15:56:35,064 - parcel_filter.core.filter - INFO - Found 1 available counties for state az: ['maricopa']
+2025-08-07 15:56:36,245 - __main__ - INFO - Selected county: maricopa
+2025-08-07 15:56:36,798 - parcel_filter.core.filter - INFO - Found 10 unique power operators
+2025-08-07 15:56:36,798 - parcel_filter.core.filter - INFO - Available operators in data: ['~unknown~', 'Arizona Public Service Company', 'California Independent System Operator', 'City of Mesa - (AZ)', 'Intermountain Power Service Corporation', 'Salt River Project', 'San Diego Gas & Electric', 'Southern California Edison', 'Tucson Electric Power Co.', 'Western Area Power Administration']
+2025-08-07 15:56:38,007 - __main__ - INFO - Selected power provider: None
+2025-08-07 15:56:38,008 - __main__ - INFO - Step 1: Loading parcels...
+2025-08-07 15:56:38,517 - parcel_filter.core.filter - INFO - Unwanted activities columns: ['Land Use', 'Unwanted', 'Ownership', 'Unwanted.1']
+2025-08-07 15:56:38,518 - parcel_filter.core.filter - INFO - Unique values in 'Unwanted' column: [ True False]
+2025-08-07 15:56:38,519 - parcel_filter.core.filter - INFO - Unique values in 'Unwanted.1' column: [False nan]
+2025-08-07 15:56:38,519 - parcel_filter.core.filter - INFO - Loaded 17 unwanted activities/ownerships from Google Sheets
+2025-08-07 15:56:38,968 - parcel_filter.core.filter - INFO - Parcel count in parcels_filtered_initial: 4545
+2025-08-07 15:56:39,174 - parcel_filter.core.filter - INFO - Parcel count after initial filtering: 4545
+2025-08-07 15:56:39,174 - parcel_filter.core.filter - INFO - Loaded 4545 parcels after initial filtering
+2025-08-07 15:56:39,174 - __main__ - INFO - Step 2: Applying filters...
+2025-08-07 15:56:39,174 - parcel_filter.core.filter - INFO - Filtering parcels that intersect with airports...
+2025-08-07 15:56:39,319 - parcel_filter.core.filter - INFO - Created temporary parcels_filtered_airports_1754600199 with 4500 rows
+2025-08-07 15:56:39,319 - parcel_filter.core.filter - INFO - Parcel count after airport filtering: 4500
+2025-08-07 15:56:39,319 - parcel_filter.core.filter - INFO - After airport filtering: 4500 parcels
+2025-08-07 15:56:39,319 - parcel_filter.core.filter - INFO - Filtering parcels based on transmission line distance...
+2025-08-07 15:56:39,403 - parcel_filter.core.filter - INFO - Created temporary parcels_filtered_transmission_1754600199 with 2680 rows
+2025-08-07 15:56:39,403 - parcel_filter.core.filter - INFO - Parcel count after transmission line filtering: 2680
+2025-08-07 15:56:45,871 - parcel_filter.core.filter - INFO - Filtering parcels based on minimum KV: 69.0
+2025-08-07 15:56:45,933 - parcel_filter.core.filter - INFO - Created temporary parcels_filtered_kv_1754600205 with 685 rows
+2025-08-07 15:56:45,933 - parcel_filter.core.filter - INFO - Parcel count after KV filtering: 685
+2025-08-07 15:56:50,145 - parcel_filter.core.filter - INFO - Filtering parcels based on roadway distance: 250.0 meters
+2025-08-07 15:56:50,169 - parcel_filter.core.filter - INFO - Created temporary parcels_filtered_roadway_1754600210 with 58 rows
+2025-08-07 15:56:50,169 - parcel_filter.core.filter - INFO - Parcel count after roadway distance filtering: 58
+2025-08-07 15:56:50,169 - __main__ - INFO - Step 3: Calculating drive times...
+2025-08-07 15:56:50,169 - parcel_filter.core.filter - INFO - Loading isochrone data from database
+2025-08-07 15:56:50,980 - parcel_filter.core.filter - INFO - Loaded 3 isochrone polygons
+2025-08-07 15:56:50,980 - parcel_filter.core.filter - INFO - Calculating drive times...
+2025-08-07 15:56:52,075 - parcel_filter.core.filter - INFO - Drive time calculation completed
+2025-08-07 15:56:52,078 - __main__ - INFO - Step 4: Ranking parcels...
+2025-08-07 15:56:52,622 - parcel_filter.core.mcda_ranking - INFO - Successfully loaded ranking data with 17 rows
+2025-08-07 15:56:52,623 - parcel_filter.core.mcda_ranking - INFO - Loaded weights: {'zoning': 0.2, 'description': 0.2, 'fema_nri': 0.2, 'flood': 0.2, 'size': 0.08, 'drive': 0.04, 'transmission': 0.08}
+2025-08-07 15:56:52,637 - parcel_filter.core.mcda_ranking - INFO - Created all ranking lookup tables
+2025-08-07 15:56:52,671 - parcel_filter.core.mcda_ranking - INFO - Created MCDA ranking table: results.az_maricopa_all_providers_20250807_155652
+2025-08-07 15:56:52,698 - parcel_filter.core.filter - INFO - MCDA Ranking Statistics:
+2025-08-07 15:56:52,698 - parcel_filter.core.filter - INFO -   Total parcels: 58
+2025-08-07 15:56:52,698 - parcel_filter.core.filter - INFO -   Min score: 0.00
+2025-08-07 15:56:52,698 - parcel_filter.core.filter - INFO -   Max score: 10.00
+2025-08-07 15:56:52,698 - parcel_filter.core.filter - INFO -   Mean score: 5.57
+2025-08-07 15:56:52,698 - parcel_filter.core.filter - INFO -   Median score: 6.28
+2025-08-07 15:56:52,698 - parcel_filter.core.filter - INFO -   Standard deviation: 1.97
+2025-08-07 15:56:52,698 - parcel_filter.core.filter - INFO - Top 5 parcels by MCDA ranking:
+2025-08-07 15:56:52,698 - parcel_filter.core.filter - INFO -   1. Parcel 20409008: Score 10.00
+2025-08-07 15:56:52,698 - parcel_filter.core.filter - INFO -      Zoning: Planned
+2025-08-07 15:56:52,698 - parcel_filter.core.filter - INFO -      Site Description: None
+2025-08-07 15:56:52,698 - parcel_filter.core.filter - INFO -   2. Parcel 40320021H: Score 8.32
+2025-08-07 15:56:52,699 - parcel_filter.core.filter - INFO -      Zoning: Mixed
+2025-08-07 15:56:52,699 - parcel_filter.core.filter - INFO -      Site Description: None
+2025-08-07 15:56:52,699 - parcel_filter.core.filter - INFO -   3. Parcel 50353045C: Score 7.27
+2025-08-07 15:56:52,699 - parcel_filter.core.filter - INFO -      Zoning: Mixed
+2025-08-07 15:56:52,699 - parcel_filter.core.filter - INFO -      Site Description: None
+2025-08-07 15:56:52,699 - parcel_filter.core.filter - INFO -   4. Parcel 50414344D: Score 7.22
+2025-08-07 15:56:52,699 - parcel_filter.core.filter - INFO -      Zoning: Planned
+2025-08-07 15:56:52,699 - parcel_filter.core.filter - INFO -      Site Description: None
+2025-08-07 15:56:52,699 - parcel_filter.core.filter - INFO -   5. Parcel 30431141: Score 7.15
+2025-08-07 15:56:52,699 - parcel_filter.core.filter - INFO -      Zoning: Industrial
+2025-08-07 15:56:52,699 - parcel_filter.core.filter - INFO -      Site Description: None
+2025-08-07 15:56:52,702 - parcel_filter.core.filter - INFO - Ranking results saved to CSV: results/az_maricopa_all_providers_20250807_155652.csv
+2025-08-07 15:56:52,702 - parcel_filter.core.filter - INFO - Final results log saved to: results/az_maricopa_all_providers_20250807_155652.log
+2025-08-07 15:56:52,705 - __main__ - INFO - Step 5: Saving results...
+2025-08-07 15:56:52,705 - parcel_filter.core.filter - INFO - Results already saved to permanent table: results.az_maricopa_all_providers_20250807_155652
+2025-08-07 15:56:52,705 - __main__ - INFO - Step 6: Cleaning up temporary data...
+2025-08-07 15:56:52,706 - parcel_filter.core.filter - INFO - Cleaned up temporary table: parcels_filtered_roadway_1754600210
+2025-08-07 15:56:52,707 - __main__ - INFO - ============================================================
+2025-08-07 15:56:52,707 - __main__ - INFO - FINAL RESULTS: 58 parcels identified and ranked
+2025-08-07 15:56:52,707 - __main__ - INFO - ============================================================
+2025-08-07 15:56:52,707 - __main__ - INFO - FILTERING SUMMARY:
+2025-08-07 15:56:52,707 - __main__ - INFO -   State: AZ
+2025-08-07 15:56:52,707 - __main__ - INFO -   County: Maricopa
+2025-08-07 15:56:52,707 - __main__ - INFO -   Transmission Distance: 100.0 meters
+2025-08-07 15:56:52,707 - __main__ - INFO -   Power Provider: All providers
+2025-08-07 15:56:52,707 - __main__ - INFO -   Min KV: No filter
+2025-08-07 15:56:52,707 - __main__ - INFO -   Ranking Method: MCDA
+2025-08-07 15:56:52,707 - __main__ - INFO -   Results Table: results.az_maricopa_all_providers_20250807_155652
+2025-08-07 15:56:52,707 - __main__ - INFO - PIPELINE COMPLETED SUCCESSFULLY
+2025-08-07 15:56:52,708 - parcel_filter.core.db_utils - INFO - Database connection closed
