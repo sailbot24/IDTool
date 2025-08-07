@@ -2,6 +2,7 @@ import psycopg2
 import logging
 import pandas as pd
 import re
+import sys
 from pathlib import Path
 from typing import List, Optional, Union, Dict, Any
 from .mcda_ranking import MCDARanker
@@ -78,6 +79,23 @@ class ParcelFilter:
         self.weights = None
         self.power_provider = None
         self.final_results_table = None
+
+    def _check_parcel_count_and_exit(self, count: int, filter_name: str) -> None:
+        """Check if parcel count is too low and exit with error if so.
+        
+        Args:
+            count: Number of parcels after filtering
+            filter_name: Name of the filter that was applied
+        """
+        if count <= 1:
+            error_msg = f"ERROR: Only {count} parcel(s) remaining after {filter_name} filter. Pipeline cannot continue."
+            logger.error(error_msg)
+            print(f"\n{'='*80}")
+            print(f"{error_msg}")
+            print(f"{'='*80}")
+            print(f"Please adjust your filter criteria and try again.")
+            print(f"Available filters: Power provider, Transmission Distance, KV Value, Roadway distance ")
+            sys.exit(1)
 
     def __enter__(self):
         """Context manager entry."""
@@ -232,6 +250,9 @@ class ParcelFilter:
             logger.info(f"Parcel count after initial filtering: {len(self.filtered_parcels)}")
             logger.info(f"Loaded {len(self.filtered_parcels)} parcels after initial filtering")
             
+            # Check if we have enough parcels to start with
+            self._check_parcel_count_and_exit(len(self.filtered_parcels), "initial loading")
+            
             # Update the filtered parcels table name
             self.filtered_parcels_table = 'parcels_filtered_initial'
             
@@ -268,6 +289,9 @@ class ParcelFilter:
                 count = result.scalar()
                 logger.info(f"Created temporary {temp_table} with {count} rows")
                 
+                # Check if count is too low and exit if necessary
+                self._check_parcel_count_and_exit(count, "airport")
+                
                 # Update the filtered parcels table name
                 self.filtered_parcels_table = temp_table
                 logger.info(f"Parcel count after airport filtering: {count}")
@@ -300,6 +324,9 @@ class ParcelFilter:
                 result = conn.execute(text(f"SELECT COUNT(*) FROM {temp_table}"))
                 count = result.scalar()
                 logger.info(f"Created temporary {temp_table} with {count} rows")
+                
+                # Check if count is too low and exit if necessary
+                self._check_parcel_count_and_exit(count, "transmission line")
                 
                 # Update the filtered parcels table name
                 self.filtered_parcels_table = temp_table
@@ -342,6 +369,9 @@ class ParcelFilter:
                 result = conn.execute(text(f"SELECT COUNT(*) FROM {temp_table}"))
                 count = result.scalar()
                 logger.info(f"Created temporary {temp_table} with {count} rows")
+                
+                # Check if count is too low and exit if necessary
+                self._check_parcel_count_and_exit(count, "power provider")
                 
                 # Update the filtered parcels table name
                 self.filtered_parcels_table = temp_table
@@ -422,6 +452,9 @@ class ParcelFilter:
                 result = conn.execute(text(f"SELECT COUNT(*) FROM {temp_table}"))
                 count = result.scalar()
                 logger.info(f"Created temporary {temp_table} with {count} rows")
+                
+                # Check if count is too low and exit if necessary
+                self._check_parcel_count_and_exit(count, "roadway distance")
                 
                 # Update the filtered parcels table name
                 self.filtered_parcels_table = temp_table
@@ -504,6 +537,9 @@ class ParcelFilter:
                 result = conn.execute(text(f"SELECT COUNT(*) FROM {temp_table}"))
                 count = result.scalar()
                 logger.info(f"Created temporary {temp_table} with {count} rows")
+                
+                # Check if count is too low and exit if necessary
+                self._check_parcel_count_and_exit(count, "minimum KV")
                 
                 # Update the filtered parcels table name
                 self.filtered_parcels_table = temp_table
