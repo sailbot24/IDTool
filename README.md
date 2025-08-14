@@ -23,15 +23,49 @@
 - PostgreSQL with PostGIS extension
 - Git
 
-## 🛠️ Installation
+## ��️ Installation
 
-### 1. Clone the Repository
+### Option 1: Using UV (Recommended)
+
+UV is a fast Python package installer and resolver. It's much faster than pip and provides better dependency management.
+
+#### 1. Install UV
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+#### 2. Clone and Set Up
+```bash
+git clone https://github.com/sailbot24/IDTool.git
+cd IDTool
+
+# Run the UV migration script
+python setup_uv.py
+```
+
+#### 3. Run the Application
+```bash
+# Run the main application
+./run_idtool.sh
+
+# Or rebuild the database
+./rebuild_db.sh
+
+# Or run any Python script with UV
+uv run main.py
+```
+
+### Option 2: Traditional Setup (Legacy)
+
+If you prefer the traditional pip/venv approach:
+
+#### 1. Clone the Repository
 ```bash
 git clone https://github.com/sailbot24/IDTool.git
 cd IDTool
 ```
 
-### 2. Set Up Environment
+#### 2. Set Up Environment
 The tool includes an automated environment setup:
 
 ```bash
@@ -98,11 +132,6 @@ raw/parcels/
 │   └── weld/
 │       ├── weld_parcels.shp
 │       └── weld_parcels.csv
-└── az/
-    ├── maricopa/
-    │   └── maricopa_parcels.shp
-    └── pima/
-        └── pima_parcels.shp
 ```
 
 #### Rebuild Commands

@@ -1,4 +1,4 @@
-#! source venv/bin/activate
+#!/usr/bin/env python3
 import argparse
 import logging
 from pathlib import Path
